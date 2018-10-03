@@ -88,8 +88,8 @@ imshow(ims(:,:,2,5)); axis off;
 
 plot(ims(:,:,2,5)); axis off;
 % Specify pixel of interest on the figure
-x = 265;
-y = 44;
+x = 307;
+y = 28;
 z = 2;
 
 % Plot both data points and fitted line
