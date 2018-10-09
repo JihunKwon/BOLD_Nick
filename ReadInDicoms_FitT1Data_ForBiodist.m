@@ -1,18 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Version 1.1
+% modified on 10/04/2018 by Jihun Kwon
+% Fit T1wI and estimate T1map
+% Email: jkwon3@bwh.harvard.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear;
 clc;
 tic;
 F = dir('MR*');
 
 %% These have to be changed depending on the datasest
-TR = [90 270 810 2430 7290];
-nSlices = 3;
+%% Mouse 1
+%*For F2, F2b
+%TR = [90 270 810 2430 7290]; nSlices = 3; nTRs = 5;
+%*For F3,F4
+%TR = [100 300 900 2700 8400]; nSlices = 3; nTRs = 5;
+%*For F6,F7,F7b
+%TR = [120 300 900 2700 8400]; nSlices = 4; nTRs = 5;
+%*For F8,F9,F10,F11
+%TR = [100 200 400 800 1600 3200 7000]; nSlices = 3; nTRs = 7;
 
-% For F6
-% TR = [120 300 900 2700 8400];
-% nSlices = 4;
-
+%% Mouse 3
+TR = [100 150 300 500 1000 2000 3000 5000 8000]; nSlices = 3; nTRs = 9;
 %% Rest of the parameters are same
-nTRs = 5;
 counter = 1; %Count the number of files. Usually 15=3(Slice)*5
 clear ims
 
@@ -55,9 +66,7 @@ for xx=1:size(ims,1)
             end
         end
     end
-    %disp('*********************')
     disp(xx); %up to 384
-    %disp('*********************')
 end
 
 toc;
@@ -101,7 +110,7 @@ F = A_est(x,y,z)*(1-exp(-xdata/T1_est(x,y,z)));
 plot(xdata(:),a(:),'ko',xdata(:),F(:),'b-'); 
 
 % Show T1map
-imagesc(T1_est(:,:,2),[0,2000]);set(gca,'dataAspectRatio',[1 1 1]);axis off;
+imagesc(T1_est(:,:,1),[0,2000]);set(gca,'dataAspectRatio',[1 1 1]);axis off;
 colorbar;colormap jet;
 
 info1 = dicominfo('MRIm01.dcm');
@@ -124,4 +133,11 @@ info17 = dicominfo('MRIm17.dcm');
 info18 = dicominfo('MRIm18.dcm');
 info19 = dicominfo('MRIm19.dcm');
 info20 = dicominfo('MRIm20.dcm');
+info21 = dicominfo('MRIm21.dcm');
+info22 = dicominfo('MRIm22.dcm');
+info23 = dicominfo('MRIm23.dcm');
+info24 = dicominfo('MRIm24.dcm');
+info25 = dicominfo('MRIm25.dcm');
+info26 = dicominfo('MRIm26.dcm');
+info27 = dicominfo('MRIm27.dcm');
 %}
