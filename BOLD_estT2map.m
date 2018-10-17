@@ -1,4 +1,4 @@
-function [t2map] = BOLD_estT2map(basename,i)
+function [t2map] = BOLD_estT2map(base_name,i)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 2.0
 % modified on 03/02/2018 by Heling Zhou, Ph.D.
@@ -17,9 +17,9 @@ function [t2map] = BOLD_estT2map(basename,i)
 %% load data and header information
 f_num = num2str(i);
 f_num_crop = strcat(f_num,'_crop');
-base_new = strcat(basename,f_num);
-basecrop = strcat(basename,f_num_crop);
-cd(base_new)
+base_new = strcat(base_name,f_num);
+basecrop = strcat(base_name,f_num_crop);
+cd(basecrop)
 
 BOLD_crop(base_new,basecrop);
 
@@ -39,6 +39,8 @@ S0map=reshape(S0map,size(S0map,1),size(S0map,2),numofslice,[]);
 S0map = permute(S0map,[1,2,4,3]);
 mkdir(strcat(basecrop,'\results'))
 save(strcat(basecrop,'\results\t2map'),'t2map','S0map')
+
+%{
 %% save visualization results
 figure;
 for i=1:size(t2map,3)
@@ -48,6 +50,7 @@ for i=1:size(t2map,3)
         saveas(gcf,strcat(basecrop,'\results\map_s',num2str(j),'_tp',num2str(i),'.tif'))
     end
 end
+
 %% calulate ROI values and plot
 t2map(t2map>100)=nan;
 flag=1;
@@ -76,6 +79,6 @@ for i=1:size(t2map,4)
     sheetname = strcat("Slice ",int2str(i));
     xlswrite(strcat('\results\ROI_values.xlsx'),out(:,:,i),sheetname);
 end
-
+%}
 end
 

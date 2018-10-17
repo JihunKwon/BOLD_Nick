@@ -112,32 +112,4 @@ plot(xdata(:),a(:),'ko',xdata(:),F(:),'b-');
 % Show T1map
 imagesc(T1_est(:,:,1),[0,2000]);set(gca,'dataAspectRatio',[1 1 1]);axis off;
 colorbar;colormap jet;
-
-info1 = dicominfo('MRIm01.dcm');
-info2 = dicominfo('MRIm02.dcm');
-info3 = dicominfo('MRIm03.dcm');
-info4 = dicominfo('MRIm04.dcm');
-info5 = dicominfo('MRIm05.dcm');
-info6 = dicominfo('MRIm06.dcm');
-info7 = dicominfo('MRIm07.dcm');
-info8 = dicominfo('MRIm08.dcm');
-info9 = dicominfo('MRIm09.dcm');
-info10 = dicominfo('MRIm10.dcm');
-info11 = dicominfo('MRIm11.dcm');
-info12 = dicominfo('MRIm12.dcm');
-info13 = dicominfo('MRIm13.dcm');
-info14 = dicominfo('MRIm14.dcm');
-info15 = dicominfo('MRIm15.dcm');
-info16 = dicominfo('MRIm16.dcm');
-info17 = dicominfo('MRIm17.dcm');
-info18 = dicominfo('MRIm18.dcm');
-info19 = dicominfo('MRIm19.dcm');
-info20 = dicominfo('MRIm20.dcm');
-info21 = dicominfo('MRIm21.dcm');
-info22 = dicominfo('MRIm22.dcm');
-info23 = dicominfo('MRIm23.dcm');
-info24 = dicominfo('MRIm24.dcm');
-info25 = dicominfo('MRIm25.dcm');
-info26 = dicominfo('MRIm26.dcm');
-info27 = dicominfo('MRIm27.dcm');
 %}

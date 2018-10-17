@@ -5,13 +5,13 @@ function [] = BOLD_vis_estT1T2map(animal_name)
 % Visualize "estimated" T1map and T2*map and subtract air and O2 breathing
 % Email: jkwon3@bwh.harvard.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+close all;
 margins = [.007 .007];
-cd('C:\Users\jihun\Documents\MATLAB\BOLD\Est_T1T2map');
+cd('C:\Users\jihun\Documents\MATLAB\BOLD\Est_T1T2map\');
 cb_t1map = [500 2800];
 cb_t2map = [0 25];
-cb_t1sub = [-150 150];
-cb_t2sub = [-5 5];
+cb_t1sub = [-200 200];
+cb_t2sub = [-15 15];
 
 %T1map, air
 load('T1map_air_M3_para.mat');
@@ -46,8 +46,6 @@ T1sub_z3 = T1_air_z3 - T1_O2_z3;
 T2sub_z1 = T2_air_z1 - T2_O2_z1;
 T2sub_z2 = T2_air_z2 - T2_O2_z2;
 T2sub_z3 = T2_air_z3 - T2_O2_z3;
-
-cd('C:\Users\jihun\Documents\MATLAB\BOLD\Est_T1T2map');
 
 figure(1);
 subplot_tight(1,3,1,margins), imshow(T1_air_z1), title('T1, air, z1'); colorbar; colormap jet; set(gca,'clim',cb_t1map);

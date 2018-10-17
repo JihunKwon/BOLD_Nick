@@ -106,39 +106,6 @@ colorbar; colormap(flip_cb); set(gca,'clim',cb_inv_range);
 subplot_tight(3,5,15), imshow(T1_est_24h(:,:,3)); title('Z3 24hour');
 colorbar; colormap(flip_cb); set(gca,'clim',cb_inv_range);
 saveas(gcf,strcat('T1wI_M3_WholeVolume_flipjet_allfig.pdf'));
-
-%% Relative change
-%Initialize
-rel_pre = zeros(size(T1_est_pre,1),size(T1_est_pre,2));
-rel_15m = zeros(size(T1_est_pre,1),size(T1_est_pre,2));
-rel_1h = zeros(size(T1_est_pre,1),size(T1_est_pre,2));
-rel_5h = zeros(size(T1_est_pre,1),size(T1_est_pre,2));
-rel_24h = zeros(size(T1_est_pre,1),size(T1_est_pre,2));
-
-rel_pre = (T1_est_pre(:,:,1)-T1_est_pre(:,:,z_pre))./T1_est_pre(:,:,1)*100;
-rel_15m = (T1_est_pre(:,:,1)-T1_est_15m(:,:,z_15m))./T1_est_pre(:,:,1)*100;
-rel_1h = (T1_est_pre(:,:,1)-T1_est_1h(:,:,z_1h))./T1_est_pre(:,:,1)*100;
-rel_5h = (T1_est_pre(:,:,1)-T1_est_5h(:,:,z_5h))./T1_est_pre(:,:,1)*100;
-rel_24h = (T1_est_pre(:,:,1)-T1_est_24h(:,:,z_24h))./T1_est_pre(:,:,1)*100;
-
-rel_pre(isnan(rel_pre))=0; rel_pre(~isfinite(rel_pre))=0;
-rel_15m(isnan(rel_15m))=0; rel_15m(~isfinite(rel_15m))=0;
-rel_1h(isnan(rel_1h))=0;   rel_1h(~isfinite(rel_1h))=0;
-rel_5h(isnan(rel_5h))=0;   rel_5h(~isfinite(rel_5h))=0;
-rel_24h(isnan(rel_24h))=0; rel_24h(~isfinite(rel_24h))=0;
-
-figure(4); hold on;
-subplot_tight(1,5,1,margins), imshow(rel_pre(:,:)), title('Pre(%)')
-colorbar; colormap jet; set(gca,'clim',cb_rel);
-subplot_tight(1,5,2,margins), imshow(rel_15m(:,:)), title('15 min(%)')
-colorbar; colormap jet; set(gca,'clim',cb_rel);
-subplot_tight(1,5,3,margins), imshow(rel_1h(:,:)), title('1.5 hour(%)')
-colorbar; colormap jet; set(gca,'clim',cb_rel);
-subplot_tight(1,5,4,margins), imshow(rel_5h(:,:)), title('5 hour(%)')
-colorbar; colormap jet; set(gca,'clim',cb_rel);
-subplot_tight(1,5,5,margins), imshow(rel_24h(:,:)), title('24 hour(%)')
-colorbar; colormap jet; set(gca,'clim',cb_rel);
-saveas(gcf,strcat('T1wI_M3_WholeVolume_rel_jet.pdf'));
 %}
 %% Write Parameters
 %{
@@ -150,25 +117,4 @@ T1_5h = T1_est_5h(:,:,z_5h);
 T1_24h = T1_est_24h(:,:,z_24h);
 
 save('T1_dynamic_M3.mat','T1_pre','T1_15m','T1_1h','T1_5h','T1_24h');
-%}
-%% Zoom in
-%{
-figure(2); hold on;
-xrange = 180:330;
-subplot_tight(1,5,1,margins), imshow(X0(xrange,:),map0), title('Pre')
-colormap jet; set(gca,'clim',cb_range);
-subplot_tight(1,5,2,margins), imshow(X15m(xrange,:),map15min), title('15 min')
-colormap jet; set(gca,'clim',cb_range);
-subplot_tight(1,5,3,margins), imshow(X1h(210:360,:),map1h), title('1.5 hour')
-colormap jet; set(gca,'clim',cb_range);
-subplot_tight(1,5,4,margins), imshow(X5h(190:340,:),map05h), title('5 hour')
-colormap jet; set(gca,'clim',cb_range);
-subplot_tight(1,5,5,margins), imshow(X24h(200:350,:),map24h), title('24 hour')
-colormap jet; set(gca,'clim',cb_range);
-
-%colormap jet;
-%set(gca,'clim',[0 17000]);
-%colorbar;
-% Save T1map as pdf
-saveas(gcf,strcat('T1wI_unfiltered_Zoomin.pdf'));
 %}

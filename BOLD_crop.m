@@ -8,9 +8,9 @@ function []=BOLD_crop(dirname,dirname_crop)
 
 % For Nick's data
 len = 191; %192/2=96
-x_init = 91;
+x_init = 65;
 y_init = 1;
-for i=1:30
+for i=1:45
     sname = sprintf('MRIm%02d.dcm',i);
     fname = fullfile(dirname, sname);
     [X, map] = dicomread(fname);
