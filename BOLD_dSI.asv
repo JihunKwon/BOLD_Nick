@@ -1,0 +1,70 @@
+function [] = BOLD_dSI(animal_name,time_name,b_z1,b_z2,b_z3,T2_air,T2_O2)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Version 1.0
+% modified on 10/17/2018 by Jihun Kwon
+% Calculate dSI pixel-by-pixel
+% Email: jkwon3@bwh.harvard.edu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+margins = [.007 .007];
+cb_dSI = [0 100];
+
+%Convert zero (outside of ROI) to NaN
+b_z1 = double(b_z1); b_z1(b_z1 == 0) = NaN;
+b_z2 = double(b_z2); b_z2(b_z2 == 0) = NaN;
+b_z3 = double(b_z3); b_z3(b_z3 == 0) = NaN;
+
+T2_air_roi(:,:,1) = T2_air(:,:,1) .* b_z1;
+T2_air_roi(:,:,2) = T2_air(:,:,2) .* b_z2;
+T2_air_roi(:,:,3) = T2_air(:,:,3) .* b_z3;
+
+T2_O2_roi(:,:,1) = T2_O2(:,:,1) .* b_z1;
+T2_O2_roi(:,:,2) = T2_O2(:,:,2) .* b_z2;
+T2_O2_roi(:,:,3) = T2_O2(:,:,3) .* b_z3;
+
+% figure;
+% imshow(T2_air_roi(:,:,1));
+vol_air = [0 0 0]; vol_O2 = [0 0 0];
+sum_air = [0 0 0]; sum_O2 = [0 0 0];
+ave_air = [0 0 0]; ave_O2 = [0 0 0];
+tot_dSI = [0 0 0];
+dSI = NaN(size(T2_air,1), size(T2_air,2), size(T2_air,3));
+for k=1:size(T2_air,3)
+    for j=1:size(T2_air,2)
+        for i=1:size(T2_air,1)
+            
+            %Air
+            if (~isnan(T2_air_roi(i,j,k)) && (T2_air_roi(i,j,k) ~= 0)) %neither Nan or zero
+                vol_air(k) = vol_air(k) + 1;
+                sum_air(k) = sum_air(k) + T2_air_roi(i,j,k);
+            end
+            
+            %O2
+            if (~isnan(T2_O2_roi(i,j,k)) && (T2_O2_roi(i,j,k) ~= 0)) %neither Nan or zero
+                vol_O2(k) = vol_O2(k) + 1;
+                sum_O2(k) = sum_O2(k) + T2_O2_roi(i,j,k);
+            end
+            
+            %Calc dSI
+            if (~isnan(T2_air_roi(i,j,k)) && (T2_air_roi(i,j,k) ~= 0) || ~isnan(T2_O2_roi(i,j,k)) || (T2_O2_roi(i,j,k) ~= 0))
+                dSI(i,j,k) = 100*(T2_air_roi(i,j,k) - T2_O2_roi(i,j,k)) / T2_air_roi(i,j,k);
+            end
+            
+        end
+    end
+end
+
+ave_air = sum_air./vol_air;
+ave_O2 = sum_O2./vol_O2;
+
+for l=1:size(T2_air,3)
+    tot_dSI(l) = 100*(ave_air(l) - ave_O2(l)) / ave_air(l);
+end
+
+figure(1);
+subplot_tight(1,3,1,margins), imshow(dSI(:,:,1)), title('dSI, z1'); colorbar; colormap(redblue); set(gca,'clim',cb_t2sub);
+subplot_tight(1,3,2,margins), imshow(dSI(:,:,1)), title('dSI, z2'); colorbar; colormap(redblue); set(gca,'clim',cb_t2sub);
+subplot_tight(1,3,3,margins), imshow(dSI(:,:,1)), title('dSI, z3'); colorbar; colormap(redblue); set(gca,'clim',cb_t2sub);
+saveas(gcf,strcat('BOLD_T2map_sub_',animal_name,'_est.pdf'));
+
+end

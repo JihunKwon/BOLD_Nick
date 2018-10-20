@@ -1,4 +1,4 @@
-function [dist,out] = BOLD_contour(animal_name,time_name,target,air,tar_name_s)
+function [dist,out,p] = BOLD_contour(animal_name,time_name,target,air,tar_name_s)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 1.0
 % modified on 10/17/2018 by Jihun Kwon
@@ -6,8 +6,8 @@ function [dist,out] = BOLD_contour(animal_name,time_name,target,air,tar_name_s)
 % Email: jkwon3@bwh.harvard.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% calulate ROI values and plot
-c_min = -10; c_max = 10;
-c_pattern = redblue; % redblue or gray
+c_min = 0; c_max = 100;
+c_pattern = jet; % redblue or gray
 
 mkdir('results');
 dir = pwd;
