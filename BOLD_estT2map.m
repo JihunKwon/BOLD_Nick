@@ -1,4 +1,4 @@
-function [t2map] = BOLD_estT2map(base_name,i)
+function [t2map] = BOLD_estT2map(base_name,i,time_name)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 2.0
 % modified on 03/02/2018 by Heling Zhou, Ph.D.
@@ -18,15 +18,26 @@ function [t2map] = BOLD_estT2map(base_name,i)
 f_num = num2str(i);
 f_num_crop = strcat(f_num,'_crop');
 base_new = strcat(base_name,f_num);
-basecrop = strcat(base_name,f_num_crop);
-cd(basecrop)
+base_crop = strcat(base_name,f_num_crop);
 
-BOLD_crop(base_new,basecrop);
+cd(base_crop)
 
+BOLD_crop_Andr(base_new,base_crop,time_name);
+
+%% Smoothing by Gaussian Filter, if necessarily
+gauss_sigma = 2; %Change this sigma accordingly
+gauss_sigma_str = num2str(gauss_sigma);
+f_num_gauss = strcat(f_num_crop,'_G',gauss_sigma_str);
+base_gauss = strcat(base_name,f_num_gauss);
+cd(base_gauss)
+BOLD_Gaussian(base_crop,base_gauss,gauss_sigma);
+base_crop = base_gauss;
+
+%% Start Estimation
 [new_T,~]=dicom_info_field({'EchoTime','SliceLocation'},base_new);
 te=unique(new_T.EchoTime,'stable');
 numofslice=length(unique(new_T.SliceLocation));
-data=dicomread_dir(basecrop); %J edit
+data=dicomread_dir(base_crop); %J edit
 
 % te=5:7:68; % make sure te is correct;
 data=reshape(data,size(data,1),size(data,2),length(te),[]);
@@ -37,8 +48,8 @@ t2map=reshape(t2map,size(t2map,1),size(t2map,2),numofslice,[]);
 t2map = permute(t2map,[1,2,4,3]);
 S0map=reshape(S0map,size(S0map,1),size(S0map,2),numofslice,[]);
 S0map = permute(S0map,[1,2,4,3]);
-mkdir(strcat(basecrop,'\results'))
-save(strcat(basecrop,'\results\t2map'),'t2map','S0map')
+mkdir(strcat(base_crop,'\results'))
+save(strcat(base_crop,'\results\t2map'),'t2map','S0map')
 
 %{
 %% save visualization results

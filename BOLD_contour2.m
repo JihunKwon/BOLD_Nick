@@ -6,8 +6,8 @@ function [p,b] = BOLD_contour2(target,T2map,tar_name_s)
 % Email: jkwon3@bwh.harvard.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% calulate ROI values and plot
-c_min = 0; c_max = 40;
-c_pattern = jet; % redblue or gray
+c_min = 0; c_max = 30;
+c_pattern = redblue; % redblue or gray
 
 mkdir('results');
 dir = pwd;

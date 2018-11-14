@@ -8,58 +8,30 @@
 
 clear;
 clc;
-close all;
-tic;
-animal_name = 'M3';
-time_name = 'PostRT_30m'; %'PreRT'or 'PostRT_10m' or 'PostRT_30m'
-ani_time_name = strcat(animal_name,'_',time_name);
-base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\Input_T1wI\';
-base_name = strcat(base_name,ani_time_name,'\');
-cd(base_name);
-%Folder dir. 1:air T1wI, 2:air T2*wI, 3:O2 T1wI, 4:O2 T2*wI
+close all;% BOLD_B_2018
 
-%% Est T1 or T2* map
-%i=4;
-for i=1:4 %i=1;
-    %Mouse 3
-    TR = [100 150 300 500 1000 2000 3000 5000 8000]; nSlices = 3; nTRs = size(TR,2);
-    
-    if (rem(i,2)==1) %if i is T1wI, estimate T1map
-%         cd(base_name);
-%         % Import DICOM
-%         f_num = num2str(i);
-%         cd(f_num);
-%         F = dir('MR*');
-%         
-%         %% Estimate T1map from T1wI
-%         T1_est = BOLD_estT1map(F,TR,nTRs,nSlices);
-%         
-%         % Write Parameters
-%         if i==1
-%             T1_est_air = T1_est;
-%         else %if i==3
-%             T1_est_O2 = T1_est;
-%         end
-        
-    else %if i is T2*wI, estimate T2*map
-        cd(base_name);
-                
-        % Import DICOM
-        f_num = num2str(i);
-        cd(f_num);
-        F = dir('MR*');
-        T2_est = BOLD_estT2map(base_name,i,time_name);
-        
-        % Write Parameters
-        if i==2
-            T2_est_air = T2_est;
-            T2_est_air = squeeze(T2_est_air);
-        else %if i==4
-            T2_est_O2 = T2_est;
-            T2_est_O2 = squeeze(T2_est_O2);
-        end
-    end
-end %end of for loop
+BOLD_crop_Andr;
+animal_name = 'C'; % B,C,D,E,F
+base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\';
+base_name = strcat(base_name,'BOLD_',animal_name,'_2018\');
+time_name = 'week2';
+cd(base_name);
+
+
+%% Estimate T2* map
+% Import DICOM
+i=1;
+F = dir('MR*');
+T2_est = BOLD_estT2map(base_name,i,time_name);
+
+% Write Parameters
+if i==2
+    T2_est_air = T2_est;
+    T2_est_air = squeeze(T2_est_air);
+else %if i==4
+    T2_est_O2 = T2_est;
+    T2_est_O2 = squeeze(T2_est_O2);
+end
 
 
         

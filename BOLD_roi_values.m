@@ -9,8 +9,8 @@ function [values,bw,Position]=BOLD_roi_values(varargin)
 % mean values of images from multi rois, exclude nan, inf and zeros. 
 %[values,bw,Position]=roi_values(img,imga,roi_idx,bw,Position);
 %*********************************************************************
-c_min = 0; c_max = 25;
-c_pattern = jet; % redblue or gray
+c_min = 0; c_max = 20000;
+c_pattern = gray; % redblue or gray
 img=varargin{1};
 imga=varargin{2};
 roi_idx=varargin{3};
@@ -22,7 +22,8 @@ end
 
 if nargin==4
         figure
-        imagesc(imga);colormap(c_pattern);caxis([c_min c_max]);img_setting1;title(strcat("Outline ",num2str(roi_idx)," ROI(s)"))
+        imagesc(imga);colormap(c_pattern);caxis([c_min c_max]);
+        img_setting1;title(strcat("Outline ",num2str(roi_idx)," ROI(s)"))
         hold on
         [bw,Position]=drawroi(roi_idx);        
         roi_para_drawing(Position,roi_idx);
