@@ -7,8 +7,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Air breathing
-time_name = 'PreRT'; % or 'PreRT','PostRT_10m', 'PostRT_30m'
-basefolder_air = strcat('C:\Users\jihun\Documents\MATLAB\BOLD\Input_T1wI\M3_',time_name,'\2_crop_G1');
+time_name = 'PostRT_10m'; % or 'PreRT','PostRT_10m', 'PostRT_30m'
+basefolder_air = strcat('C:\Users\jihun\Documents\MATLAB\BOLD\Input_T1wI\M3_',time_name,'\2_crop');
 
 if strcmp(time_name,'PostRT_30m') %30min uses same air data with 10min
     basefolder_air = 'C:\Users\jihun\Documents\MATLAB\BOLD\Input_T1wI\M3_PostRT_10m\2_crop_G1';
@@ -26,7 +26,7 @@ else % Same for PostRT 10 and 30 min
     Y=[33 33 32];
 end
 
-len=0;
+len=8;
 ROI_mean_air = zeros(3,15);
 count = 0;
 for z = 1:3
@@ -50,12 +50,9 @@ end
 
 
 %% O2 breathing
-basefolder_O2 = strcat('C:\Users\jihun\Documents\MATLAB\BOLD\Input_T1wI\M3_',time_name,'\4_crop_G1');
+basefolder_O2 = strcat('C:\Users\jihun\Documents\MATLAB\BOLD\Input_T1wI\M3_',time_name,'\4_crop');
 cd(basefolder_O2);
 
-%Chose pixel
-X=[30 30 28]; % These cordinate are as shown in imshow('MRIc04.dcm').
-Y=[35 34 36];
 ROI_mean_O2 = zeros(3,15);
 count = 0;
 for z = 1:3
@@ -89,9 +86,11 @@ plot(TE,ROI_mean_O2(1,:),'-x'); hold on;
 plot(TE,ROI_mean_sub(1,:),'-s');
 title('z1');
 legend('air','O_2','O_2 - air');
+xlabel('TE(ms)');
+ylabel('Intensity');
 set(gcf, 'Color', 'w');
-saveas(gcf,'SI_TE_10min.tiff');
-export_fig SI_TE_10min.tiff -q101
+saveas(gcf,'SI_TE_z1_10m.tif');
+export_fig SI_TE_z1_10m.tif -q101
 
 figure(2);
 plot(TE,ROI_mean_air(2,:),'-o'); hold on;
@@ -99,6 +98,11 @@ plot(TE,ROI_mean_O2(2,:),'-x'); hold on;
 plot(TE,ROI_mean_sub(2,:),'-s');
 title('z2');
 legend('air','O_2','O_2 - air');
+xlabel('TE(ms)');
+ylabel('Intensity');
+set(gcf, 'Color', 'w');
+saveas(gcf,'SI_TE_z2_10m.tif');
+export_fig SI_TE_z2_10m.tif -q101
 
 figure(3);
 plot(TE,ROI_mean_air(3,:),'-o'); hold on;
@@ -106,11 +110,21 @@ plot(TE,ROI_mean_O2(3,:),'-x'); hold on;
 plot(TE,ROI_mean_sub(3,:),'-s');
 title('z3');
 legend('air','O_2','O_2 - air');
+xlabel('TE(ms)');
+ylabel('Intensity');
+set(gcf, 'Color', 'w');
+saveas(gcf,'SI_TE_z3_10m.tif');
+export_fig SI_TE_z3_10m.tif -q101
 
 figure(4);
-plot(TE,ROI_mean_sub(3,:),'-o');
-title('z3, O_2 - air');
-legend('O_2 - air');
+plot(TE,ROI_mean_sub(1,:),'-o'); hold on;
+plot(TE,ROI_mean_sub(2,:),'-x'); hold on;
+plot(TE,ROI_mean_sub(3,:),'-s'); hold on;
+line(xlim(), [0,0], 'LineWidth', 1, 'Color', 'k');
+title('O_2 - air');
+xlabel('TE(ms)');
+ylabel('Intensity');
+legend('z1','z2','z3');
 set(gcf, 'Color', 'w');
-saveas(gcf,'SI_TE_diff_30min.tiff');
-export_fig SI_TE_diff_30min.tiff -q101
+saveas(gcf,'SI_TE_diff_10m.tif');
+export_fig SI_TE_diff_10m.tif -q101
