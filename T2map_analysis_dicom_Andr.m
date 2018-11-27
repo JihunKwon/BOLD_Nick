@@ -5,10 +5,10 @@
 % Email: helingzhou7@gmail.com
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% load data and header information
-%BOLD_crop_Andr %Jihun edit: this function crops image
 
-dirname=uigetdir; % location of dicom files
-cropname=uigetdir; % location of "cropped" dicom files
+dirname=uigetdir; % location of "uncropped" dicom files
+BOLD_crop_Andr(dirname) %Jihun edit: this function crops image
+cropname = strcat(dirname,'_crop');
 [new_T,~]=dicom_info_field({'EchoTime','SliceLocation'},dirname);
 te=unique(new_T.EchoTime,'stable');
 numofslice=length(unique(new_T.SliceLocation));

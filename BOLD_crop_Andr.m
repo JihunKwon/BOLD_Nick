@@ -1,4 +1,4 @@
-function []=BOLD_crop_Andr()
+function []=BOLD_crop_Andr(dirname)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 1.0
 % created on 11/12/2018 by Jihun Kwon
@@ -9,7 +9,7 @@ function []=BOLD_crop_Andr()
 
 %% load data and header information
 
-dirname=uigetdir; % location of dicom files
+%dirname=uigetdir; % location of dicom files
 dirname_crop = strcat(dirname,'_crop');
 % For Andrea's data
 len = 96;
