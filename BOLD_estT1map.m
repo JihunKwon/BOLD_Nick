@@ -24,7 +24,7 @@ xdata = TR;
 for xx=1:size(ims,1)
     for yy = 1:size(ims,2)
         for zz = 1:size(ims,3)
-            if mask(xx,yy,zz)==1;
+            if mask(xx,yy,zz)==1
             
                 ydata = double(squeeze((ims(xx,yy,zz,:))))';
 

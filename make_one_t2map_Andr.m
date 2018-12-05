@@ -1,4 +1,4 @@
-function [t2map,S0map]=make_one_t2map_Andr(img,bw,matr,te)
+function [t2map,S0map,kmap]=make_one_t2map_Andr(img,bw,matr,te)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 3.0 (modified from t2starmap.m)
 % Modified on 01/17/2018 by Heling Zhou, Ph.D.
@@ -28,7 +28,7 @@ parfor i=1:x
 
     cfit{i}=T2fitting(tcourses(i,:),te,'off'); %fit time course to Animal_T2...
 %    S0(i)=cfit{i}.S0;t2(i)=cfit{i}.T2star;
-    S0(i)=cfit{i}.S0;t2(i)=cfit{i}.T2;
+    S0(i)=cfit{i}.S0;t2(i)=cfit{i}.T2;k(i)=cfit{i}.k
     warning(warnStruct);
   
 end
@@ -46,4 +46,9 @@ S0full(nonzerotcourse)=S0;
 S0map(bw_new)=S0full;
 S0map(~bw_new)=NaN;
 
+kmap=ones(matr);
+kfull=nan(sum(bw_new(:)),1);
+kfull(nonzerotcourse)=k;
+kmap(bw_new)=kfull;
+kmap(~bw_new)=NaN;
 end

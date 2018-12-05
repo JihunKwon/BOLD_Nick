@@ -10,16 +10,40 @@ clear;
 clc;
 close all;
 tic;
-animal_name = 'M3';
-time_name = 'PostRT_30m'; %'PreRT'or 'PostRT_10m' or 'PostRT_30m'
+animal_name = 'M4';
+time_name = 'PostRT'; %'PreRT'or 'PostRT'
 ani_time_name = strcat(animal_name,'_',time_name);
-base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\Input_T1wI\';
-base_name = strcat(base_name,ani_time_name,'\');
-cd(base_name);
-%Folder dir. 1:air T1wI, 2:air T2*wI, 3:O2 T1wI, 4:O2 T2*wI
 
+%Pre
+% base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\';
+% base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic';
+% in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop';
+% out_dir_1 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_G1';
+% out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_G05';
+
+base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26';
+base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic';
+in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop';
+out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop_G05';
+
+
+%Post
+% base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26';
+% base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic';
+% in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop';
+% out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop_G05';
+
+%integrate files
+%integrate_files(base_name,animal_name,time_name)
+cd(base_name_new)
+
+%crop file
+BOLD_crop(base_name_new,time_name);
+
+%smoothing
+%BOLD_Gaussian(in_dir,out_dir_1,1.0);
+BOLD_Gaussian(in_dir,out_dir_05,0.5);
 %% Est T1 or T2* map
-%i=4;
 for i=1:4 %i=1;
     %Mouse 3
     TR = [100 150 300 500 1000 2000 3000 5000 8000]; nSlices = 3; nTRs = size(TR,2);
@@ -83,7 +107,7 @@ save(strcat('T2map_O2_',animal_name,'_para_G1.mat'),'T2_est_O2');
 % load('T1map_O2_M3_para.mat');
 % load('T2map_O2_M3_para.mat');
 
-T2sub = T2_est_air-T2_est_O2; %Subtract, T2*map
+T2sub = T2_est_O2-T2_est_air; %Subtract, T2*map
 
 % Apply Gaussian Filter only to subtracted image
 % G_sigma = 0.5;
