@@ -11,8 +11,8 @@ clc;
 close all;% BOLD_B_2018
 
 BOLD_crop_Andr;
-animal_name = 'C'; % B,C,D,E,F
-base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\';
+animal_name = 'B'; % B,C,D,E,F
+base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea';
 base_name = strcat(base_name,'BOLD_',animal_name,'_2018\');
 time_name = 'week2';
 cd(base_name);

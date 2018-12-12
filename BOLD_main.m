@@ -11,27 +11,29 @@ clc;
 close all;
 tic;
 animal_name = 'M4';
-time_name = 'PostRT'; %'PreRT'or 'PostRT'
+time_name = 'PreRT'; %'PreRT'or 'PostRT' or 'Post1w'
 ani_time_name = strcat(animal_name,'_',time_name);
 
 %Pre
-% base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\';
-% base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic';
-% in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop';
-% out_dir_1 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_G1';
-% out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_G05';
-
-base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26';
-base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic';
-in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop';
-out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\temp\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop_G05';
-
+base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\';
+base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic';
+in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_L';
+out_dir_1 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_G1_L';
+out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_G05';
+out_dir_t1_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_T1large';
 
 %Post
 % base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26';
 % base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic';
 % in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop';
 % out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26\T2_dynamic_crop_G05';
+
+%1w Post
+base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27';
+base_name_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27\T2_dynamic';
+in_dir = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27\T2_dynamic_crop';
+out_dir_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27\T2_dynamic_crop_G05';
+
 
 %integrate files
 %integrate_files(base_name,animal_name,time_name)
@@ -42,28 +44,28 @@ BOLD_crop(base_name_new,time_name);
 
 %smoothing
 %BOLD_Gaussian(in_dir,out_dir_1,1.0);
-BOLD_Gaussian(in_dir,out_dir_05,0.5);
+BOLD_Gaussian(in_dir,out_dir_1,1.0);
 %% Est T1 or T2* map
 for i=1:4 %i=1;
     %Mouse 3
     TR = [100 150 300 500 1000 2000 3000 5000 8000]; nSlices = 3; nTRs = size(TR,2);
     
     if (rem(i,2)==1) %if i is T1wI, estimate T1map
-%         cd(base_name);
-%         % Import DICOM
-%         f_num = num2str(i);
-%         cd(f_num);
-%         F = dir('MR*');
-%         
-%         %% Estimate T1map from T1wI
-%         T1_est = BOLD_estT1map(F,TR,nTRs,nSlices);
-%         
-%         % Write Parameters
-%         if i==1
-%             T1_est_air = T1_est;
-%         else %if i==3
-%             T1_est_O2 = T1_est;
-%         end
+        cd(base_name);
+        % Import DICOM
+        f_num = num2str(i);
+        cd(f_num);
+        F = dir('MR*');
+        
+        %% Estimate T1map from T1wI
+        T1_est = BOLD_estT1map(F,TR,nTRs,nSlices);
+        
+        % Write Parameters
+        if i==1
+            T1_est_air = T1_est;
+        else %if i==3
+            T1_est_O2 = T1_est;
+        end
         
     else %if i is T2*wI, estimate T2*map
         cd(base_name);

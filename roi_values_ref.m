@@ -14,7 +14,7 @@ end
 if nargin==3
         figure
         imagesc(imga);colormap(gray);img_setting1;title(strcat("Outline ",num2str(roi_idx)," ROI(s)"));
-        caxis([0 1000]);
+        %caxis([0 50000]);
         hold on
         [bw,Position]=drawroi(roi_idx);        
         roi_para_drawing(Position,roi_idx);

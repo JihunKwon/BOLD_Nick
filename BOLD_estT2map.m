@@ -16,24 +16,27 @@ function [t2map] = BOLD_estT2map(base_name,i,time_name)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% load data and header information
 f_num = num2str(i);
-f_num_crop = strcat(f_num,'_crop');
+%f_num_crop = strcat(f_num,'_crop');
+f_num_crop = strcat('_crop');
 base_new = strcat(base_name,f_num);
 base_crop = strcat(base_name,f_num_crop);
-
+base_crop = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018_crop';
 cd(base_crop)
 
 BOLD_crop_Andr(base_new,base_crop,time_name);
 
 %% Smoothing by Gaussian Filter, if necessarily
-gauss_sigma = 2; %Change this sigma accordingly
+gauss_sigma = 0.5; %Change this sigma accordingly
 gauss_sigma_str = num2str(gauss_sigma);
 f_num_gauss = strcat(f_num_crop,'_G',gauss_sigma_str);
 base_gauss = strcat(base_name,f_num_gauss);
+base_gauss = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018_crop_G05';
 cd(base_gauss)
 BOLD_Gaussian(base_crop,base_gauss,gauss_sigma);
 base_crop = base_gauss;
 
 %% Start Estimation
+base_new = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
 [new_T,~]=dicom_info_field({'EchoTime','SliceLocation'},base_new);
 te=unique(new_T.EchoTime,'stable');
 numofslice=length(unique(new_T.SliceLocation));

@@ -1,4 +1,4 @@
-function []=BOLD_crop(dirname,time_name)
+%function []=BOLD_crop(dirname,time_name)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 1.0
 % created on 10/10/2018 by Jihun Kwon
@@ -6,13 +6,16 @@ function []=BOLD_crop(dirname,time_name)
 % Email: jkwon@bwh.harvard.edu 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-dirname_crop = strcat(dirname,'_crop');
+dirname_crop = strcat(dirname,'_crop_G1_L');
 
-len = 60; %192/2=96
+len = 60; %120
 if strcmp(time_name,'PreRT')
+    x_init = 100;%70 for L
+    y_init = 70;%55 for L
+elseif strcmp(time_name,'PostRT')
     x_init = 100;
     y_init = 70;
-else
+elseif strcmp(time_name,'Post1w')
     x_init = 100;
     y_init = 70;
 end
@@ -24,7 +27,7 @@ for i=1:num_max
     sname = sprintf('MRIm%04d.dcm',i);
     fname = fullfile(dirname, sname);
     [X] = dicomread(fname);
-    info = dicominfo(fname);
+    %info = dicominfo(fname);
     %imshow(X); %Check whether tumor is in the ROI.
     %set(gca,'dataAspectRatio',[1 1 1]); axis off;
     
@@ -36,7 +39,8 @@ for i=1:num_max
     %No need for this because header info is overlayed eventually anyway.
     %info_new = dicominfo(fname_new);
     cd(dirname_crop);
-    dicomwrite(X_crop, fname_new, info);
+%    dicomwrite(X_crop, fname_new, info);
+    dicomwrite(X_crop, fname_new);
     if rem(i,50)==0
         str = num2str(i);
         disp(str);

@@ -7,13 +7,13 @@ num_max = size(num_of_files,1);
 
 for i=1:num_max
     cd(in_dir)
-    fdcm_pre = sprintf('MRIc%02d.dcm', i);
+    fdcm_pre = sprintf('MRIc%04d.dcm', i);
     fname = fullfile(in_dir, fdcm_pre);
     [X] = dicomread(fname);
     info = dicominfo(fname);
     
     Y1 = imgaussfilt(X,sigma);
-    fdcm_1 = sprintf('MRIc%02d.dcm', i);
+    fdcm_1 = sprintf('MRIc%04d.dcm', i);
     cd(out_dir)
     dicomwrite(Y1, fdcm_1, info);
 

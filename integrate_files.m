@@ -10,6 +10,8 @@ if strcmp(animal_name,'M4')
         target_dir = [17 18 19 20 21 23 26 28 29 30 31];
     elseif strcmp(time_name,'PostRT')
         target_dir = [8 9 11 12 13 14 15 16 17 18 20];
+    elseif strcmp(time_name,'Post1w')
+        target_dir = [6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21];
     end
 else
     print('No such animal!!')

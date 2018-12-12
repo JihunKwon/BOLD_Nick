@@ -8,10 +8,10 @@ function []=BOLD_crop_T1(dirname,time_name)
 
 dirname_crop = strcat(dirname,'_crop');
 
-len = 60; %192/2=96
+len = 150; %60
 if strcmp(time_name,'PreRT')
-    x_init = 165;
-    y_init = 67;
+    x_init = 120;%100
+    y_init = 40;
 else
     x_init = 165;
     y_init = 67;
@@ -26,11 +26,13 @@ for i=1:num_max
     [X] = dicomread(fname);
     info = dicominfo(fname);
     %imshow(X); %Check whether tumor is in the ROI.
+    caxis([0 3000]);
     %set(gca,'dataAspectRatio',[1 1 1]); axis off;
     
 %     x_new = size(X,1)/2; %192/2=96
     X_crop = X(x_init:x_init+len,y_init:y_init+len);
     %imshow(X_crop); %Check whether tumor is in the ROI.
+    caxis([0 3000]);
     fname_new = sprintf('MRIc%02d.dcm',i);
     
     %No need for this because header info is overlayed eventually anyway.
@@ -42,4 +44,5 @@ for i=1:num_max
         disp(str);
     end
     
+end
 end
