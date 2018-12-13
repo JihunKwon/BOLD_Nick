@@ -19,13 +19,19 @@ load('t2map.mat')
 %set two timepoints
 tp_pre = 3;
 tp_post = 5;
+sigma = 0.2;
+slope = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+rel_inc = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+slope_thr = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+rel_inc_thr = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+thr = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
 
 for z = 1:size(t2map,4) %Slice
 %     for tp = 1:size(t2map,3)
 %         t2map(:,:,tp,z) = imgaussfilt(t2map(:,:,tp,z),0.5);
 %     end
-    
-    t2map(isnan(t2map)) = 0.0000000000001;
+    %t2map =  BOLD_Gaussian_postT2(t2map, sigma);
+    %t2map(isnan(t2map)) = 0.0000000000001;
     
     %Get T2* value of each slice at two timepoints
     img_pre = t2map(:,:,tp_pre,z);
@@ -41,7 +47,7 @@ for z = 1:size(t2map,4) %Slice
     figure;
     %slope(slope<0) = NaN;
     b1 = imagesc(slope(:,:,z));
-    set(b1,'AlphaData',~isnan(slope))
+    %set(b1,'AlphaData',~isnan(slope))
     cmap = jet(round(max(max(slope(:,:,z)))));
     pbaspect([1 1 1]);
     %colormap(flipud(parula))
@@ -62,7 +68,7 @@ for z = 1:size(t2map,4) %Slice
     figure;
     %rel_inc(rel_inc<0) = NaN;
     b2 = imagesc(rel_inc(:,:,z));
-    set(b2,'AlphaData',~isnan(rel_inc))
+    %set(b2,'AlphaData',~isnan(rel_inc))
     pbaspect([1 1 1]);
     %colormap(flipud(parula))
     colormap(jet)
@@ -70,10 +76,20 @@ for z = 1:size(t2map,4) %Slice
     colorbar;
     set(gca,'xtick',[],'ytick',[]);
     title('Relative Increase map');
+end
 
+%Thresholding
+thr = (rel_inc >= -10 & rel_inc <= 10); 
+rel_inc_thr = rel_inc .* thr;
+
+for z=1:size(thr,4)
+    figure;
+    imshow(thr(:,:,z));
+    title('Relative Increase map, thr');
 end
 
 
+%{
 %% calulate ROI values and plot
 t2map(t2map>100)=nan;
 flag=1;
@@ -93,3 +109,4 @@ for i=1:size(t2map,4)
     subplot(1,2,2);plot(values(:,:,i),'LineWidth',2);
     axis_setting1; title('Dynamic T2');ylim([0 70]); %2roi:ylim([0 50]); 5roi:ylim([0 70]);
  end
+%}
