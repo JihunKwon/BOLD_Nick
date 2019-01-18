@@ -7,19 +7,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
 
+
 base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018\results';
-%base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_C_2018\results';
-%base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_D_2018\results';
-%base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_E_2018\results';
-%base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_F_2018\results';
+raw_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018_crop';
+gauss_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018_crop_G05';
 
 cd(base_name)
 load('t2map.mat')
 
 %set two timepoints
+tp_max = 25; 
+z_max = 5; 
+te_max = 15;
+te_target = 11;
 tp_pre = 3;
 tp_post = 5;
 sigma = 0.2;
+
+T2wI_raw = zeros(97,97,tp_max,z_max);
 slope = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
 rel_inc = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
 slope_thr = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
@@ -78,35 +83,43 @@ for z = 1:size(t2map,4) %Slice
     title('Relative Increase map');
 end
 
-%Thresholding
-thr = (rel_inc >= -10 & rel_inc <= 10); 
-rel_inc_thr = rel_inc .* thr;
-
-for z=1:size(thr,4)
-    figure;
-    imshow(thr(:,:,z));
-    title('Relative Increase map, thr');
-end
-
-
-%{
-%% calulate ROI values and plot
-t2map(t2map>100)=nan;
-flag=1;
-while flag
-    try 
-        numofrois=uint8(input('number of ROI: '));
-        flag=0;
-    catch em
+%Get every image with TE=39. TEs(10)
+count = 0;
+for tp = 1:tp_max
+    for z = 1:z_max
+        for te = 1:te_max
+            count = count + 1;
+            if te == te_target
+                %raw image (used for overlay)
+                cd(raw_name)
+                sname = sprintf('MRIc%04d.dcm',count);
+                fname = fullfile(raw_name, sname);
+                T2wI_raw(:,:,tp,z) = dicomread(fname);
+            end
+        end
     end
 end
-    
-for i=1:size(t2map,4)
-    [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,t2map(:,:,1,i),numofrois);
-    clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
-    subplot(1,2,1);imagesc(t2map(:,:,1,i));colormap(gray);caxis([0 60]);img_setting1;title('ROI');hold on
-    roi_para_drawing(p{i},numofrois)
-    subplot(1,2,2);plot(values(:,:,i),'LineWidth',2);
-    axis_setting1; title('Dynamic T2');ylim([0 70]); %2roi:ylim([0 50]); 5roi:ylim([0 70]);
- end
-%}
+
+%Thresholding
+low_lim = -10;
+high_lim = 10;
+thr = (rel_inc >= low_lim & rel_inc <= high_lim); 
+rel_inc_thr = rel_inc .* thr;
+
+% for z=1:size(thr,4)
+%     figure;
+%     imshow(thr(:,:,z));
+%     title('Relative Increase map, thr');
+% end
+
+%% Overlay
+% Overlay one image transparently onto another 
+cd(gauss_name)
+time = 8;
+slice = 2;
+imB = T2wI_raw(:,:,time,slice); % Background image 
+imF = thr(:,:,slice); % Foreground image 
+[hf,hb] = imoverlay(imB,imF,[1,2],[0 10000],'flag',0.7); 
+colormap('flag'); % figure colormap still applies
+savename = strcat('Slope_overlay_t',num2str(time),'_z',num2str(slice),'_',num2str(low_lim),'to',num2str(high_lim),'.tif');
+saveas(gcf,savename);

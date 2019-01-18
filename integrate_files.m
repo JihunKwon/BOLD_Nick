@@ -3,7 +3,9 @@ function integrate_files(base_name,animal_name,time_name)
 %the new folder named "T2_dynamic"
 
 cd(base_name)
+%When have brain and tumor, specify organ name
 mkdir T2_dynamic
+%mkdir T2_dynamic_tumor
 
 if strcmp(animal_name,'M4')
     if strcmp(time_name,'PreRT')
@@ -12,6 +14,10 @@ if strcmp(animal_name,'M4')
         target_dir = [8 9 11 12 13 14 15 16 17 18 20];
     elseif strcmp(time_name,'Post1w')
         target_dir = [6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21];
+    elseif strcmp(time_name,'Post2w')
+        %When have brain and tumor, specify organ name
+        %target_dir = [5 6 8 9 10 11 12 13 14 15 16 17 18 19 20 21]; %brain
+        target_dir = [24 25 26 27 28]; %tumor
     end
 else
     print('No such animal!!')
@@ -34,6 +40,8 @@ for tp = 1:size(target_dir,2)
     %This part copy files to one folder.
     src = pwd;
     dest = strcat(base_name,'\T2_dynamic');
+    %When have brain and tumor, specify organ name
+    %dest = strcat(base_name,'\T2_dynamic_tumor'); 
     easycopy(src,dest);
     cd ..\..\..\..
 end

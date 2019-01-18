@@ -60,7 +60,7 @@ F = A_est(x,y,z)*(1-exp(-xdata/T1_est(x,y,z)));
 plot(xdata(:),a(:),'ko',xdata(:),F(:),'b-'); 
 
 % Show T1map
-imagesc(T1_est(:,:,1),[0,2000]);set(gca,'dataAspectRatio',[1 1 1]);axis off;
+imagesc(T1_est(:,:,1),[0,1000]);set(gca,'dataAspectRatio',[1 1 1]);axis off;
 colorbar;colormap jet;
 %}
 end
