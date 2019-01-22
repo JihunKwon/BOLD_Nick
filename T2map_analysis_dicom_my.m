@@ -6,6 +6,7 @@
 % Also saves BOLD.mat, which will be used later
 % Email: helingzhou7@gmail.com
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+close all
 %% load data and header information
 dirname=uigetdir; % location of "uncropped" dicom files
 tarname = strcat(dirname,'_crop'); %name of target files. In our case, this is usually cropped files.
@@ -38,6 +39,7 @@ for i=1:size(t2map,3)
         saveas(gcf,strcat(dirname,'\results_G05\map_s',num2str(j),'_tp',num2str(i),'.tif'))
     end
 end
+
 %% calulate ROI values and plot
 t2map(t2map>100)=nan;
 flag=1;
@@ -48,35 +50,46 @@ while flag
     catch em
     end
 end
-    
+
+file_target = 5;
 for i=1:size(t2map,4)
+    %When contour on T2* map
     [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,t2map(:,:,1,i),numofrois);
+    
+    %When contour on raw dicom image
+    %{
+    sname = sprintf('MRIc%04d.dcm',file_target);
+    fname = fullfile(tarname, sname);
+    T2wI(:,:,1,i) = dicomread(fname);
+    [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,T2wI(:,:,1,i),numofrois);
+    file_target = file_target+size(te,1); %go to next slice, same te file
+    %}
     clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
-    subplot(1,2,1);imagesc(t2map(:,:,1,i));colormap(gray);caxis([0 30]);img_setting1;title('ROI');hold on
+    subplot(1,2,1);
+    
+    imagesc(t2map(:,:,1,i)); caxis([0 30]); %To visualize T2* map
+    %imagesc(T2wI(:,:,1,i)); caxis([0 20000]); %To visualize dicom file
+    colormap(gray);
+    
+    img_setting1;title('ROI');hold on
     roi_para_drawing(p{i},numofrois)
     subplot(1,2,2);plot(values(:,:,i),'LineWidth',2);
     axis_setting1; title('Dynamic T2');ylim([0 40]); %2roi:ylim([0 50]); 5roi:ylim([0 70]);
-    saveas(gcf,strcat(dirname,'\results_G05\plot_s',num2str(i),'_2roi_G05.tif'))
-    xlswrite(strcat(dirname,'\results_G05\ROI_values_2roi_G05.xlsx'),values(:,:,i),i,'A1');
+    saveas(gcf,strcat(dirname,'\results\plot_s',num2str(i),'_3roi.tif'))
+    xlswrite(strcat(dirname,'\results\ROI_values_3roi.xlsx'),values(:,:,i),i,'A1');
 end
 
 %Saving variables 'values','b','p' is important when you want to reproduce
 %the same contouring.
-save(strcat(dirname,'\results_G05\reference_',numofrois,'ROIs'),'values','b','p')
+save(strcat(dirname,'\results\reference_',num2str(numofrois),'ROIs'),'values','b','p')
 
 %% Apply reference ROIs
 %When you want to apply same ROIs to different timepoint images and
 %compare, use "reference ROIs".
-if strcmp(time_name,'PreRT')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25'; %t1 map
-elseif strcmp(time_name,'PostRT')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26'; %t1 map
-elseif strcmp(time_name,'1wPost')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27'; %t1 map
-end
 
-cd(base_name)
+cd(dirname)
 load('reference_2ROIs.mat')
+%load('reference_3ROIs.mat')
 
 cd T2_dynamic/results_G0.5/
 load('t2map.mat')
@@ -98,8 +111,8 @@ for i=1:size(values_rel_dT2,3)
     figure;
     plot(values_rel_dT2(:,:,i),'-o','LineWidth',2);
     axis_setting1; title(strcat('dT2*, Z',num2str(i),', ',time_name));
-    xlim([0 16]); %pre:ylim([0 16000]);,post:ylim([0 31500]);
-    ylim([-20 20]); %pre:ylim([0 16000]);,post:ylim([0 31500]);
+    %xlim([0 16]); %pre:ylim([0 16000]);,post:ylim([0 31500]);
+    %ylim([-20 20]); %pre:ylim([0 16000]);,post:ylim([0 31500]);
     yl = get(gca, 'YLim');
     line( [3.15 3.15], yl,'Color','black','LineStyle','--'); hold on;
 %     line( [6.15 6.15], yl,'Color','black','LineStyle','--'); hold on;
@@ -108,8 +121,8 @@ for i=1:size(values_rel_dT2,3)
     line( xl, [0 0],'Color','black','LineStyle','-')
     xlabel('Time')
     ylabel('\DeltaT2* (%)')
-    legend('Left Tumor','Right Tumor','Muscle','Location','northeast');
-    saveas(gcf,strcat(base_t2,'\results\BOLD_s',num2str(i),'.tif'))
+    legend('ROI 1','ROI 2','ROI 3','Location','northeast');
+    saveas(gcf,strcat(dirname,'\results\BOLD_s',num2str(i),'.tif'))
 end
 
 %% Save parameters

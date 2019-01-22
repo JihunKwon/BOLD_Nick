@@ -10,7 +10,7 @@ clc;
 close all;
 
 animal_name = 'M4'; %Different with other past animals, M4 is our first animal which we did 'dynamic' imaging.
-time_name = 'Andrea'; %'PreRT'or 'PostRT' or 'Post1w' or 'Andrea'
+time_name = 'Andrea_F'; %'PreRT'or 'PostRT' or 'Post1w' or 'Andrea'
 ani_time_name = strcat(animal_name,'_',time_name);
 
 %Define file locations depending on the 'time_name'
@@ -22,8 +22,18 @@ elseif (strcmp(time_name,'PostRT'))
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26';
 elseif (strcmp(time_name,'Post1w'))
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27';
-elseif (strcmp(time_name,'Andrea'))
+elseif strcmp(time_name,'Andrea_B')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
+elseif strcmp(time_name,'Andrea_C')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_C_2018';
+elseif strcmp(time_name,'Andrea_D')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_D_2018';
+elseif strcmp(time_name,'Andrea_E')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_E_2018';
+elseif strcmp(time_name,'Andrea_F')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_F_2018';
+elseif strcmp(time_name,'Andrea_G')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_G_2018';
 else
     return;
 end
@@ -67,10 +77,10 @@ BOLD_overlay_t2sub_rel(t2map, base_name, animal_name, time_name);
 
 %**Dynamic TOLD**
 %TOLD signal will be saved to "TOLD.mat" 
-BOLD_getTOLD(animal_name, time_name);
+BOLD_getTOLD(animal_name, time_name, numofrois);
 
 %**Dynamic BOLD**
 %This function shows dynamic curve of T2*, TOLD and BOLD all together. BOLD
 %signal will be saved to "BOLD.mat". The last "si" in the name of this
 %function emphasize that the BOLD signal is signal intensity of raw image.
-BOLD_getBOLDsi(animal_name, time_name);
+BOLD_getBOLDsi(animal_name, time_name, numofrois);

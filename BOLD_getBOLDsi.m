@@ -1,18 +1,18 @@
-function BOLD_getBOLDsi(animal_name, time_name)
+function BOLD_getBOLDsi(animal_name, time_name, numofrois)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 1.0
 % created on 12/06/2018 by Jihun Kwon
 % this function calculates dynamic BOLD signal intensity.
 % Email: jkwon3@bwh.harvard.edu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+close all
 
 %% Parameters
 % animal_name = 'M4';
 % time_name = 'Andrea'; %'PreRT'or 'PostRT' or 'Post1w' or 'Andrea'
 ani_time_name = strcat(animal_name,'_',time_name);
-numofrois = 2;
+%numofrois = 2;
 TEs = [3 7 11 15 19 23 27 31 35 39 43 47 51 55 59]; %TR = 600
-T2wI = zeros(61,61,11,3);
 count = 0;
 
 if strcmp(time_name,'PreRT')
@@ -27,19 +27,45 @@ elseif strcmp(time_name,'Post1w')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27';
     crop_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27\T2_dynamic_crop_G05';
     tp_max = 16; z_max = 3; te_max = 15;
-elseif strcmp(time_name,'Andrea')
+elseif strcmp(time_name,'Andrea_B')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
-    crop_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018_crop';
-    TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433]; %TR = 600
+    crop_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
+    TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
+    tp_max = 25; z_max = 5; te_max = 15;
+elseif strcmp(time_name,'Andrea_C')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_C_2018';
+    crop_name = strcat(base_name,'_crop');
+    TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
+    tp_max = 25; z_max = 5; te_max = 15;
+elseif strcmp(time_name,'Andrea_D')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_D_2018';
+    crop_name = strcat(base_name,'_crop');
+    TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
+    tp_max = 25; z_max = 5; te_max = 15;
+elseif strcmp(time_name,'Andrea_E')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_E_2018';
+    crop_name = strcat(base_name,'_crop');
+    TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
+    tp_max = 25; z_max = 5; te_max = 15;
+elseif strcmp(time_name,'Andrea_F')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_F_2018';
+    crop_name = strcat(base_name,'_crop');
+    TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
+    tp_max = 25; z_max = 5; te_max = 15;
+elseif strcmp(time_name,'Andrea_G')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_G_2018';
+    crop_name = strcat(base_name,'_crop');
+    TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
     tp_max = 25; z_max = 5; te_max = 15;
 end
 
 cd(base_name)
-%load('reference_2ROIs.mat') %load reference rois
+cd results
+load('reference_3ROIs.mat') %load reference rois
 
 cd(crop_name)
 
-%15(TEs)*3(slice)*11(tp)
+%15(TEs)*5(slice)*25(tp)
 %Get every image with TE=39. TEs(10)
 count = 10;
 for tp = 1:tp_max
@@ -94,7 +120,7 @@ for i=1:size(values_rel_bold,3)
     line( xl, [0 0],'Color','black','LineStyle','-')
     xlabel('Time')
     ylabel('\DeltaSI (%)')
-    legend('Left Tumor','Right Tumor','Location','southeast');
+    legend('ROI 1','ROI 2','ROI 3','Location','southeast');
     saveas(gcf,strcat(base_name,'\results\BOLDsi_s',num2str(i),'.tif'))
 end
 
@@ -124,8 +150,6 @@ for i=1:size(values_rel,3)
     ylim([-50 50]);
     yl = get(gca, 'YLim');
     line( [3.15 3.15], yl,'Color','black','LineStyle','--'); hold on;
-%     line( [6.15 6.15], yl,'Color','black','LineStyle','--'); hold on;
-%     line( [11.15 11.15], yl,'Color','black','LineStyle','--'); hold on;
     xl = get(gca, 'XLim');
     line( xl, [0 0],'Color','black','LineStyle','-')
     xlabel('Time')

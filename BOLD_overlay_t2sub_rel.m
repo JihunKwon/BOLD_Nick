@@ -30,7 +30,8 @@ elseif strcmp(time_name,'Post2w')
     tp_pre = 2;
     tp_post = 4;
     te_target = 11;
-elseif strcmp(time_name,'Andrea')
+elseif (strcmp(time_name,'Andrea_B') || strcmp(time_name,'Andrea_C') || strcmp(time_name,'Andrea_D') || ... 
+        strcmp(time_name,'Andrea_E') || strcmp(time_name,'Andrea_F') ||strcmp(time_name,'Andrea_G'))
     tp_air = 3;
     tp_total = 25;
     te_target = 11;
@@ -98,10 +99,14 @@ for z = 1:size(t2map,4)
 end
 
 
-%% Overlay
+%% Mapping (Subtraction and Relative Increase)
 T2wI_raw = zeros(size(t2map,1),size(t2map,2),tp_total,size(t2map,4));
 subtract = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
 rel_inc = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+subtr_thr = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+rel_inc_thr = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+thr_sub = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
+thr_rel = zeros(size(t2map,1),size(t2map,2),size(t2map,4));
 
 for z = 1:size(t2map,4) %Slice    
     %Get T2* value of each slice at two timepoints
@@ -158,15 +163,18 @@ for tp = 1:tp_total
     end
 end
 
-%% Overlay
+
+%% Overlay with map
+cd(base_name)
+%Manualy change these parameters
 sub_min = 1;
 sub_max = 20;
 rel_min = 1;
 rel_max = 50;
-% Overlay raw image with subtraction map
-cd(base_name)
 time = 6;
 slice = 2;
+
+% Overlay raw image with subtraction map
 imB = T2wI_raw(:,:,time,slice); % Background image 
 imF_sub = subtract(:,:,slice); % Foreground image 
 [hf,hb] = imoverlay(imB,imF_sub,[sub_min,sub_max],[0 10000],'jet',0.7); 
@@ -181,6 +189,17 @@ imF_rel = rel_inc(:,:,slice); % Foreground image
 [hf,hb] = imoverlay(imB,imF_rel,[rel_min,rel_max],[0 10000],'jet',0.7); 
 colormap('jet'); % figure colormap still applies
 colorbar;
+title('Relative Increase map (%)');
+savename = strcat('Overlay_relative_t',num2str(time),'_z',num2str(slice),'_',num2str(rel_min),'to',num2str(rel_max),'.tif');
+saveas(gcf,savename);
+
+%% Overlay with label map
+%Thresholding relative change
+thr_rel = (rel_inc >= rel_min & rel_inc <= rel_max); 
+
+% Overlay raw image with relative increase map
+[hf,hb] = imoverlay(imB,thr_rel(:,:,slice),[1,2],[0 10000],'flag',0.7); 
+colormap('flag'); % figure colormap still applies
 title('Relative Increase map (%)');
 savename = strcat('Overlay_relative_t',num2str(time),'_z',num2str(slice),'_',num2str(rel_min),'to',num2str(rel_max),'.tif');
 saveas(gcf,savename);
