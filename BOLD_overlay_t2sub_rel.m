@@ -167,7 +167,7 @@ end
 %% Overlay with map
 cd(base_name)
 %Manualy change these parameters
-sub_min = 1;
+sub_min = 1; 
 sub_max = 20;
 rel_min = 1;
 rel_max = 50;

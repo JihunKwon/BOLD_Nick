@@ -40,7 +40,7 @@ for i=1:size(t2map,3)
     end
 end
 
-%% calulate ROI values and plot
+%% Set number of ROIs
 t2map(t2map>100)=nan;
 flag=1;
 while flag
@@ -51,32 +51,37 @@ while flag
     end
 end
 
-file_target = 5;
+%% Contour ROIs
+tp_target = 5; %which timepoint to use for T2*map contouring
+file_target = 5; %which TE to use for raw image contouring
+background_str = 'Raw'; %Chose 'T2map' or 'Raw', for background image of contouring.
 for i=1:size(t2map,4)
-    %When contour on T2* map
-    [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,t2map(:,:,1,i),numofrois);
-    
-    %When contour on raw dicom image
-    %{
-    sname = sprintf('MRIc%04d.dcm',file_target);
-    fname = fullfile(tarname, sname);
-    T2wI(:,:,1,i) = dicomread(fname);
-    [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,T2wI(:,:,1,i),numofrois);
-    file_target = file_target+size(te,1); %go to next slice, same te file
-    %}
-    clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
-    subplot(1,2,1);
-    
-    imagesc(t2map(:,:,1,i)); caxis([0 30]); %To visualize T2* map
-    %imagesc(T2wI(:,:,1,i)); caxis([0 20000]); %To visualize dicom file
+    if strcmp(background_str, 'T2map')
+        %When contour on T2* map
+        [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,t2map(:,:,tp_target,i),numofrois,background_str);
+        clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
+        subplot(1,2,1);
+        imagesc(t2map(:,:,5,i)); caxis([0 40]); %To visualize T2* map
+    elseif strcmp(background_str, 'Raw')
+        %When contour on raw dicom image
+        sname = sprintf('MRIc%04d.dcm',file_target);
+        fname = fullfile(tarname, sname);
+        T2wI(:,:,1,i) = dicomread(fname);
+        [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,T2wI(:,:,1,i),numofrois,background_str);
+        file_target = file_target+size(te,1); %go to next slice, same te file
+        clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
+        subplot(1,2,1);
+        imagesc(T2wI(:,:,1,i)); caxis([0 20000]); %To visualize dicom file
+    else
+        return
+    end
     colormap(gray);
-    
     img_setting1;title('ROI');hold on
     roi_para_drawing(p{i},numofrois)
     subplot(1,2,2);plot(values(:,:,i),'LineWidth',2);
     axis_setting1; title('Dynamic T2');ylim([0 40]); %2roi:ylim([0 50]); 5roi:ylim([0 70]);
-    saveas(gcf,strcat(dirname,'\results\plot_s',num2str(i),'_3roi.tif'))
-    xlswrite(strcat(dirname,'\results\ROI_values_3roi.xlsx'),values(:,:,i),i,'A1');
+    saveas(gcf,strcat(dirname,'\results\plot_s',num2str(i),'_',num2str(numofrois),'roi.tif'))
+    xlswrite(strcat(dirname,'\results\ROI_values_',num2str(numofrois),'roi.xlsx'),values(:,:,i),i,'A1');
 end
 
 %Saving variables 'values','b','p' is important when you want to reproduce
@@ -86,7 +91,7 @@ save(strcat(dirname,'\results\reference_',num2str(numofrois),'ROIs'),'values','b
 %% Apply reference ROIs
 %When you want to apply same ROIs to different timepoint images and
 %compare, use "reference ROIs".
-
+%{
 cd(dirname)
 load('reference_2ROIs.mat')
 %load('reference_3ROIs.mat')
@@ -105,18 +110,17 @@ for tp = 1:size(values_dT2,1)
         values_rel_dT2(tp,roi,:) = (values_dT2(tp,roi,:) - values_dT2(1,roi,:))./ values_dT2(1,roi,:)*100;
     end
 end
+%}
 
 %% Relative change of dT2*
 for i=1:size(values_rel_dT2,3)
     figure;
     plot(values_rel_dT2(:,:,i),'-o','LineWidth',2);
     axis_setting1; title(strcat('dT2*, Z',num2str(i),', ',time_name));
-    %xlim([0 16]); %pre:ylim([0 16000]);,post:ylim([0 31500]);
+    %xlim([0 25]); %pre:ylim([0 16000]);,post:ylim([0 31500]);
     %ylim([-20 20]); %pre:ylim([0 16000]);,post:ylim([0 31500]);
     yl = get(gca, 'YLim');
     line( [3.15 3.15], yl,'Color','black','LineStyle','--'); hold on;
-%     line( [6.15 6.15], yl,'Color','black','LineStyle','--'); hold on;
-%     line( [11.15 11.15], yl,'Color','black','LineStyle','--'); hold on;
     xl = get(gca, 'XLim');
     line( xl, [0 0],'Color','black','LineStyle','-')
     xlabel('Time')

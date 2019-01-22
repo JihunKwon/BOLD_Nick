@@ -10,7 +10,7 @@ clc;
 close all;
 
 animal_name = 'M4'; %Different with other past animals, M4 is our first animal which we did 'dynamic' imaging.
-time_name = 'Andrea_F'; %'PreRT'or 'PostRT' or 'Post1w' or 'Andrea'
+time_name = 'Andrea_C'; %'PreRT'or 'PostRT' or 'Post1w' or 'Andrea'
 ani_time_name = strcat(animal_name,'_',time_name);
 
 %Define file locations depending on the 'time_name'
