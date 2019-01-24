@@ -60,7 +60,11 @@ end
 
 cd(dir_t1map)
 cd results
-load('reference_3ROIs.mat')
+if numofrois == 2
+    load('reference_2ROIs.mat')
+elseif numofrois == 3
+    load('reference_3ROIs.mat')
+end
 
 %% Get dynamic TOLD
 cd(base_t2)
@@ -76,7 +80,7 @@ for i=1:size(psudoT1,4)
     [values(:,:,i),b(:,:,:,i),p{i}]=roi_values_ref(psudoT1,psudoT1(:,:,1,i),numofrois,b(:,:,:,i),p{i});
     clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
     subplot(1,2,1);imagesc(psudoT1(:,:,1,i));colormap(jet);
-    %caxis([10000 20000]);
+    caxis([10000 30000]);
     img_setting1;title('ROI');hold on
     roi_para_drawing(p{i},numofrois)
     subplot(1,2,2);plot(values(:,:,i),'-o','LineWidth',2);
@@ -98,16 +102,20 @@ end
 cd(dir_t1map)
 save('TOLD.mat','values','values_rel');
 
-%% Plot BOLD and TOLD together
+%% Plot T2* and TOLD together
 cd(dir_t1map)
 load('TOLD.mat')
 load('dT2star.mat')
-for i=1:size(values_rel,3)
+for i=1:size(values_rel,3) % number of slices
     figure;
-    plot(values_rel_dT2(:,1,i),'-s','LineWidth',2); hold on;
-    plot(values_rel_dT2(:,2,i),'-o','LineWidth',2); hold on;
-    plot(values_rel(:,1,i),'--s','LineWidth',2); hold on;
+    %Manually change the number of "plot..." sentences below. Has to be
+    %equal or smaller than the number of ROIs.
+    plot(values_rel_dT2(:,1,i),'-s','LineWidth',2); hold on; %Plot dT2*, 1st ROI
+    plot(values_rel_dT2(:,2,i),'--s','LineWidth',2); hold on; %Plot dT2*, 2nd ROI
+    plot(values_rel_dT2(:,3,i),':s','LineWidth',2); hold on; %Plot dT2*, 3rd ROI
+    plot(values_rel(:,1,i),'-o','LineWidth',2); hold on; %Plot TOLD, 1st ROI
     plot(values_rel(:,2,i),'--o','LineWidth',2); hold on;
+    plot(values_rel(:,3,i),':o','LineWidth',2); hold on;
     axis_setting1; title(strcat('\DeltaT2* vs TOLD, Z',num2str(i),', ',time_name));
     %ylim([-30 15]);
     yl = get(gca, 'YLim');
@@ -116,7 +124,7 @@ for i=1:size(values_rel,3)
     line( xl, [0 0],'Color','black','LineStyle','-')
     xlabel('Time')
     ylabel('Relative Change (%)')
-    legend({'L, \DeltaT2*','R \DeltaT2*','L, TOLD','R, TOLD'},'FontSize',12,'Location','southwest');
+    legend({'ROI1, \DeltaT2*','ROI2, \DeltaT2*','ROI3, \DeltaT2*','ROI1, TOLD','ROI2, TOLD','ROI3, TOLD'},'FontSize',12,'Location','southwest');
     saveas(gcf,strcat(base_t2,'\results\BOLDvsTOLD_s',num2str(i),'.tif'))
 end
 

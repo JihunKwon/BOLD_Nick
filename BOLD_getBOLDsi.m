@@ -29,7 +29,7 @@ elseif strcmp(time_name,'Post1w')
     tp_max = 16; z_max = 3; te_max = 15;
 elseif strcmp(time_name,'Andrea_B')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
-    crop_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
+    crop_name = strcat(base_name,'_crop');
     TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
     tp_max = 25; z_max = 5; te_max = 15;
 elseif strcmp(time_name,'Andrea_C')
@@ -61,7 +61,12 @@ end
 
 cd(base_name)
 cd results
-load('reference_3ROIs.mat') %load reference rois
+
+if numofrois == 2
+    load('reference_2ROIs.mat') %load reference rois
+elseif numofrois == 3
+    load('reference_3ROIs.mat') %load reference rois
+end
 
 cd(crop_name)
 
@@ -141,19 +146,24 @@ for i=1:size(values_rel,3)
     figure;
     plot(values_rel_bold(:,1,i),'-ro','LineWidth',2); hold on;    
     plot(values_rel_bold(:,2,i),'--ro','LineWidth',2); hold on;
+    plot(values_rel_bold(:,3,i),':ro','LineWidth',2); hold on;
     plot(values_rel_dT2(:,1,i),'-^','LineWidth',2,'color',[.3 .77 .09]); hold on;
     plot(values_rel_dT2(:,2,i),'--^','LineWidth',2,'color',[.3 .77 .09]); hold on;
+    plot(values_rel_dT2(:,3,i),':^','LineWidth',2,'color',[.3 .77 .09]); hold on;
     plot(values_rel(:,1,i),'-ks','LineWidth',2); hold on;
     plot(values_rel(:,2,i),'--ks','LineWidth',2); hold on;
-    axis_setting1; title(strcat('BOLD vs \DeltaT2* vs TOLD, Z',num2str(i),', ',time_name));
-    xlim([0 16]);
-    ylim([-50 50]);
+    plot(values_rel(:,3,i),':ks','LineWidth',2); hold on;
+    %axis_setting1; title(strcat('BOLD vs \DeltaT2* vs TOLD, Z',num2str(i),', ',time_name));
+    axis_setting1; title(strcat('BOLD vs \DeltaT2* vs TOLD, Z',num2str(i)));
+    %xlim([0 16]);
+    %ylim([-50 50]);
     yl = get(gca, 'YLim');
     line( [3.15 3.15], yl,'Color','black','LineStyle','--'); hold on;
     xl = get(gca, 'XLim');
     line( xl, [0 0],'Color','black','LineStyle','-')
     xlabel('Time')
     ylabel('Relative Change (%)')
-    legend({'Tissue, BOLD','Tumor, BOLD','Tissue, \DeltaT2*','Tumor, \DeltaT2*','Tissue, TOLD','Tumor, TOLD'},'FontSize',10,'Location','southeast');
+    legend({'ROI1, BOLD','ROI2, BOLD','ROI3, BOLD','ROI1, \DeltaT2*','ROI2, \DeltaT2*',...
+        'ROI3, \DeltaT2*','ROI1, TOLD','ROI2, TOLD','ROI3, TOLD'},'FontSize',10,'Location','southeast');
     saveas(gcf,strcat(base_name,'\results\BOLDvsT2vsTOLD_s',num2str(i),'.tif'))
 end

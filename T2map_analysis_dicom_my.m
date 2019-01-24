@@ -52,18 +52,21 @@ while flag
 end
 
 %% Contour ROIs
-tp_target = 5; %which timepoint to use for T2*map contouring
-file_target = 5; %which TE to use for raw image contouring
 background_str = 'Raw'; %Chose 'T2map' or 'Raw', for background image of contouring.
 for i=1:size(t2map,4)
-    if strcmp(background_str, 'T2map')
-        %When contour on T2* map
+    %When contour on "T2* map"
+    if strcmp(background_str, 'T2map') 
+        tp_target = 5; %which timepoint to use for T2*map contouring
         [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,t2map(:,:,tp_target,i),numofrois,background_str);
         clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
         subplot(1,2,1);
-        imagesc(t2map(:,:,5,i)); caxis([0 40]); %To visualize T2* map
-    elseif strcmp(background_str, 'Raw')
-        %When contour on raw dicom image
+        imagesc(t2map(:,:,5,i)); caxis([0 50]); %To visualize T2* map
+        
+    %When contour on "raw dicom" image
+    elseif strcmp(background_str, 'Raw') 
+        tp_target = 8; %which timepoint to use for T2*map contouring
+        file_target = 5; %which TE to use for raw image contouring
+        file_target = 15*5*tp_target + file_target;
         sname = sprintf('MRIc%04d.dcm',file_target);
         fname = fullfile(tarname, sname);
         T2wI(:,:,1,i) = dicomread(fname);
@@ -71,7 +74,7 @@ for i=1:size(t2map,4)
         file_target = file_target+size(te,1); %go to next slice, same te file
         clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
         subplot(1,2,1);
-        imagesc(T2wI(:,:,1,i)); caxis([0 20000]); %To visualize dicom file
+        imagesc(T2wI(:,:,1,i)); caxis([0 18000]); %To visualize dicom file B:14000, C:18000
     else
         return
     end
@@ -80,8 +83,8 @@ for i=1:size(t2map,4)
     roi_para_drawing(p{i},numofrois)
     subplot(1,2,2);plot(values(:,:,i),'LineWidth',2);
     axis_setting1; title('Dynamic T2');ylim([0 40]); %2roi:ylim([0 50]); 5roi:ylim([0 70]);
-    saveas(gcf,strcat(dirname,'\results\plot_s',num2str(i),'_',num2str(numofrois),'roi.tif'))
-    xlswrite(strcat(dirname,'\results\ROI_values_',num2str(numofrois),'roi.xlsx'),values(:,:,i),i,'A1');
+    saveas(gcf,strcat(dirname,'\results\plot_',background_str,'_s',num2str(i),'_',num2str(numofrois),'roi.tif'))
+    xlswrite(strcat(dirname,'\results\ROI_values_',background_str,'_',num2str(numofrois),'roi.xlsx'),values(:,:,i),i,'A1');
 end
 
 %Saving variables 'values','b','p' is important when you want to reproduce
@@ -98,7 +101,9 @@ load('reference_2ROIs.mat')
 
 cd T2_dynamic/results_G0.5/
 load('t2map.mat')
+%}
 
+%% Relative change of dT2*
 %Calculate 
 for i=1:size(t2map,4) %number of slice
     %values_t1w will be (1*ROIs*Slices)
@@ -110,9 +115,6 @@ for tp = 1:size(values_dT2,1)
         values_rel_dT2(tp,roi,:) = (values_dT2(tp,roi,:) - values_dT2(1,roi,:))./ values_dT2(1,roi,:)*100;
     end
 end
-%}
-
-%% Relative change of dT2*
 for i=1:size(values_rel_dT2,3)
     figure;
     plot(values_rel_dT2(:,:,i),'-o','LineWidth',2);
@@ -125,7 +127,7 @@ for i=1:size(values_rel_dT2,3)
     line( xl, [0 0],'Color','black','LineStyle','-')
     xlabel('Time')
     ylabel('\DeltaT2* (%)')
-    legend('ROI 1','ROI 2','ROI 3','Location','northeast');
+    legend('ROI1','ROI2','ROI3','Location','northeast');
     saveas(gcf,strcat(dirname,'\results\BOLD_s',num2str(i),'.tif'))
 end
 

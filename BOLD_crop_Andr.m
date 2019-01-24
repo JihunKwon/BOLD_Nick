@@ -4,7 +4,7 @@ function []=BOLD_crop_Andr(dirname)
 % created on 11/12/2018 by Jihun Kwon
 % this code crops initial figure to make calculation efficient.
 % Email: jihun.k@frontier.hokudai.ac.jp
-% Note: running directory has to be the output folder of new dicom file. 
+% Note: running directory has to be the output folder of new (cropped) dicom file. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% load data and header information

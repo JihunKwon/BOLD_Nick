@@ -8,35 +8,32 @@ function []=BOLD_overlay_t2sub_rel(t2map, base_name,animal_name,time_name)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all
 
-cb_t2sub = [-15 15];
-cb_t2rel = [-50 50];
+crop_name = strcat(base_name,'_crop');
 
 %Set these parameters manually
 tp_pre = 3;
 tp_post = 5;
 te_max = 15;
+cb_t2sub = [-15 15];
+cb_t2rel = [-50 50];
 
+%Set parameters depending on the data type
 if strcmp(time_name,'PreRT') || strcmp(time_name,'PostRT')
     tp_total = 11;
-    te_target = 11; %te_target decides which te to use to calculate BOLD
 elseif strcmp(time_name,'Post1w')
     tp_total = 6;
     num_air_preCB = 5;
     num_total_CB = 16; %air(3) -> oxy(3) -> air(5) -> CB(5)
-    te_target = 11;
 elseif strcmp(time_name,'Post2w')
     tp_air = 2;
     tp_total = 5;
     tp_pre = 2;
     tp_post = 4;
-    te_target = 11;
 elseif (strcmp(time_name,'Andrea_B') || strcmp(time_name,'Andrea_C') || strcmp(time_name,'Andrea_D') || ... 
         strcmp(time_name,'Andrea_E') || strcmp(time_name,'Andrea_F') ||strcmp(time_name,'Andrea_G'))
     tp_air = 3;
     tp_total = 25;
-    te_target = 11;
 end
-crop_name = strcat(base_name,'_crop');
 
 cd(base_name)
 cd results
@@ -149,6 +146,7 @@ end
 %Get every image with specific TE
 cd(crop_name)
 count = 0;
+te_target = 11; %te_target decides which TE to use to calculate BOLD
 for tp = 1:tp_total
     for z = 1:size(t2map,4)
         for te = 1:te_max
@@ -166,11 +164,14 @@ end
 
 %% Overlay with map
 cd(base_name)
+cd results
 %Manualy change these parameters
-sub_min = 1; 
-sub_max = 20;
+sub_min = 1; %minimum of color range in overlaying map
+sub_max = 20; %max of color range in overlaying map
 rel_min = 1;
 rel_max = 50;
+thr_min = -10;
+thr_max = 10;
 time = 6;
 slice = 2;
 
@@ -195,11 +196,11 @@ saveas(gcf,savename);
 
 %% Overlay with label map
 %Thresholding relative change
-thr_rel = (rel_inc >= rel_min & rel_inc <= rel_max); 
+thr_rel = (thr_min <= rel_inc & rel_inc <= thr_max);
 
 % Overlay raw image with relative increase map
 [hf,hb] = imoverlay(imB,thr_rel(:,:,slice),[1,2],[0 10000],'flag',0.7); 
 colormap('flag'); % figure colormap still applies
 title('Relative Increase map (%)');
-savename = strcat('Overlay_relative_t',num2str(time),'_z',num2str(slice),'_',num2str(rel_min),'to',num2str(rel_max),'.tif');
+savename = strcat('Overlay_relative_label_t',num2str(time),'_z',num2str(slice),'_',num2str(rel_min),'to',num2str(rel_max),'.tif');
 saveas(gcf,savename);
