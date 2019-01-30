@@ -16,7 +16,10 @@ len = 96;
 x_init = 30;
 y_init = 60;
 
-for i=1:1875
+num_of_files = dir([in_dir '/*.dcm']);
+num_max = size(num_of_files,1);
+
+for i=1:num_max %1875 or 1500
     sname = sprintf('MRIm%04d.dcm',i);
     fname = fullfile(dirname, sname);
     [X] = dicomread(fname);

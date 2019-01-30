@@ -9,39 +9,57 @@ clear;
 clc;
 close all;
 
-animal_name = 'M4'; %Different with other past animals, M4 is our first animal which we did 'dynamic' imaging.
-time_name = 'Andrea_B'; %'PreRT'or 'PostRT' or 'Post1w' or 'Andrea_B' or 'Andrea_C', ...
+animal_name = 'B'; %ex: A,B,C, ...
+time_name = 'Control_1w'; %Either 'Chemo_2w', 'Control_1w' or 'Control_2w'
 ani_time_name = strcat(animal_name,'_',time_name);
 
 %Define file locations depending on the 'time_name'
-if (strcmp(time_name,'PreRT'))
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\';
-    out_dir_1 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_G1_L';
-    out_dir_t1_05 = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\T2_dynamic_crop_T1large';
-elseif (strcmp(time_name,'PostRT'))
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26';
-elseif (strcmp(time_name,'Post1w'))
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27';
-elseif strcmp(time_name,'Andrea_B')
+if strcmp(animal_name,'B') && strcmp(time_name,'Chemo_2w')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
-elseif strcmp(time_name,'Andrea_C')
+elseif strcmp(animal_name,'C') && strcmp(time_name,'Chemo_2w')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_C_2018';
-elseif strcmp(time_name,'Andrea_D')
+elseif strcmp(animal_name,'D') && strcmp(time_name,'Chemo_2w')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_D_2018';
-elseif strcmp(time_name,'Andrea_E')
+elseif strcmp(animal_name,'E') && strcmp(time_name,'Chemo_2w')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_E_2018';
-elseif strcmp(time_name,'Andrea_F')
+elseif strcmp(animal_name,'F') && strcmp(time_name,'Chemo_2w')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_F_2018';
-elseif strcmp(time_name,'Andrea_G')
+elseif strcmp(animal_name,'G') && strcmp(time_name,'Chemo_2w')
     base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_G_2018';
+%Here next set of experiments begins. Control 1 week
+elseif strcmp(animal_name,'A') && strcmp(time_name,'Control_1w')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_A_2019';
+elseif strcmp(animal_name,'B') && strcmp(time_name,'Control_1w')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_B_2019';
+elseif strcmp(animal_name,'C') && strcmp(time_name,'Control_1w')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_C_2019';
+%Control 2 week
+elseif strcmp(animal_name,'A') && strcmp(time_name,'Control_2w')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_A_2019_2';
+elseif strcmp(animal_name,'B') && strcmp(time_name,'Control_2w')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_B_2019_2';
+elseif strcmp(animal_name,'C') && strcmp(time_name,'Control_2w')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_C_2019_2';
 else
     return;
 end
 
-base_name_new = strcat(base_name,'\T2_dynamic'); %store result here (standard)
-crop_name = strcat(base_name,'\T2_dynamic_crop'); %store result for cropped image analysis
-out_dir_05 = strcat(base_name,'\T2_dynamic_crop_G05'); %store result for cropped and Gaussian filtered image analysis
+cd(base_name)
+[~,name] = fileparts(base_name); %Get name of current folder
 
+%Not sure if we use all of these folders, but make them all at once just in case
+base_name_new = strcat(name,'\T2_dynamic'); %store result here (standard)
+crop_name = strcat(name,'_crop'); %store result for cropped image analysis
+out_dir_05 = strcat(name,'_crop_G05'); %store result for cropped and Gaussian filtered image analysis
+
+cd(base_name);
+cd ..
+mkdir(crop_name); cd(crop_name) 
+crop_name_path = pwd;
+cd ..
+mkdir(out_dir_05); cd(out_dir_05);
+out_dir_05_path = pwd;
+cd(base_name)
 %% This part is just preparation before estimating T2* values. 
 %If you've already done the pre-processing, just go to the "Estimate T2* map" part.
 
@@ -58,14 +76,14 @@ out_dir_05 = strcat(base_name,'\T2_dynamic_crop_G05'); %store result for cropped
 %desktop. This function bellow crops images to tumor region to speed up (still 
 %takes about a half day).
 %**************************************
-BOLD_crop(base_name_new,time_name); %For mouse GBM
+BOLD_crop_Andr(base_name); %For mouse GBM
 %BOLD_crop(base_name_new,time_name); %For subcutaneous
 
 %**Smoothing images**
 %Before estimating T2*, apply Gaussian filter. The last variable is the
 %"sigma" in the Gaussian filter. Bigger is the stronger filtering.
 %**************************************
-BOLD_Gaussian(crop_name,out_dir_05,0.5);
+BOLD_Gaussian(crop_name_path,out_dir_05_path,0.5);
 
 %% Estimate T2* map
 %This function is the core of our analysis. This estimates T2* value and 

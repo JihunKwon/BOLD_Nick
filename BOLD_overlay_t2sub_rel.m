@@ -181,7 +181,7 @@ imF_sub = subtract(:,:,slice); % Foreground image
 [hf,hb] = imoverlay(imB,imF_sub,[sub_min,sub_max],[0 10000],'jet',0.7); 
 colormap('jet'); % figure colormap still applies
 colorbar;
-title('Subtraction map (%)');
+title('Subtraction map');
 savename = strcat('Overlay_subtract_t',num2str(time),'_z',num2str(slice),'_',num2str(sub_min),'to',num2str(sub_max),'.tif');
 saveas(gcf,savename);
 
