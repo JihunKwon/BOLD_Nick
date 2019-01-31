@@ -9,7 +9,8 @@
 close all
 %% load data and header information
 dirname=uigetdir; % location of "uncropped" dicom files
-tarname = strcat(dirname,'_crop'); %name of target files. In our case, this is usually cropped files.
+tarname = strcat(dirname,'_crop_G05'); %name of target files. In our case, this is usually cropped files.
+%tarname = strcat(dirname,'_crop');
 [new_T,~]=dicom_info_field({'EchoTime','SliceLocation'},dirname);
 te=unique(new_T.EchoTime,'stable');
 numofslice=length(unique(new_T.SliceLocation));
@@ -52,7 +53,8 @@ while flag
 end
 
 %% Contour ROIs
-background_str = 'Raw'; %Chose 'T2map' or 'Raw', for background image of contouring.
+Turboname = strcat(dirname,'_Turbo_crop'); %When we contour on turbo image, we use this variable later.
+background_str = 'Turbo'; %Chose 'T2map' or 'Raw' or 'Turbo', for background image of contouring.
 for i=1:size(t2map,4)
     %When contour on "T2* map"
     if strcmp(background_str, 'T2map') 
@@ -75,6 +77,19 @@ for i=1:size(t2map,4)
         clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
         subplot(1,2,1);
         imagesc(T2wI(:,:,1,i)); caxis([0 18000]); %To visualize dicom file B:14000, C:18000
+        
+    %When contour on "Turbo" image (Provided by Andrea)
+    elseif strcmp(background_str, 'Turbo') 
+        file_target = 10 + (i-1);%which TE to use for raw image contouring.
+        %Slice 1,2,3,4,5 in T2*wI corresponds to file 10,11,12,13,14 in Turbo.
+        sname = sprintf('MRIc%02d.dcm',file_target);
+        fname = fullfile(Turboname, sname);
+        Turbo(:,:,1,i) = dicomread(fname);
+        [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,Turbo(:,:,1,i),numofrois,background_str);
+        file_target = file_target+size(te,1); %go to next slice, same te file
+        clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
+        subplot(1,2,1);
+        imagesc(Turbo(:,:,1,i)); caxis([0 20000]); %To visualize dicom file B:14000, C:18000
     else
         return
     end
@@ -83,13 +98,13 @@ for i=1:size(t2map,4)
     roi_para_drawing(p{i},numofrois)
     subplot(1,2,2);plot(values(:,:,i),'LineWidth',2);
     axis_setting1; title('Dynamic T2');ylim([0 40]); %2roi:ylim([0 50]); 5roi:ylim([0 70]);
-    saveas(gcf,strcat(dirname,'\results\plot_',background_str,'_s',num2str(i),'_',num2str(numofrois),'roi.tif'))
-    xlswrite(strcat(dirname,'\results\ROI_values_',background_str,'_',num2str(numofrois),'roi.xlsx'),values(:,:,i),i,'A1');
+    saveas(gcf,strcat(dirname,'\results_G05\plot_',background_str,'_s',num2str(i),'_',num2str(numofrois),'roi.tif'))
+    xlswrite(strcat(dirname,'\results_G05\ROI_values_',background_str,'_',num2str(numofrois),'roi.xlsx'),values(:,:,i),i,'A1');
 end
 
 %Saving variables 'values','b','p' is important when you want to reproduce
 %the same contouring.
-save(strcat(dirname,'\results\reference_',num2str(numofrois),'ROIs'),'values','b','p')
+save(strcat(dirname,'\results_G05\reference_',num2str(numofrois),'ROIs'),'values','b','p')
 
 %% Apply reference ROIs
 %When you want to apply same ROIs to different timepoint images and
@@ -128,7 +143,7 @@ for i=1:size(values_rel_dT2,3)
     xlabel('Time')
     ylabel('\DeltaT2* (%)')
     legend('ROI1','ROI2','ROI3','Location','northeast');
-    saveas(gcf,strcat(dirname,'\results\BOLD_s',num2str(i),'.tif'))
+    saveas(gcf,strcat(dirname,'\results_G05\BOLD_s',num2str(i),'.tif'))
 end
 
 %% Save parameters

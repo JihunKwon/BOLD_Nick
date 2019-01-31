@@ -16,9 +16,10 @@ len = 96;
 x_init = 30;
 y_init = 60;
 
-num_of_files = dir([in_dir '/*.dcm']);
+num_of_files = dir([dirname '/*.dcm']);
 num_max = size(num_of_files,1);
 
+%% Raw images cropping
 for i=1:num_max %1875 or 1500
     sname = sprintf('MRIm%04d.dcm',i);
     fname = fullfile(dirname, sname);
@@ -38,4 +39,25 @@ for i=1:num_max %1875 or 1500
         str = num2str(i);
         disp(str);
     end
+end
+
+
+%% Turbo images cropping. If you contour on Turbo.
+dirname_turbo = strcat(dirname,'_Turbo');
+dirname_turbo_crop = strcat(dirname,'_Turbo_crop');
+for i=1:29
+    sname = sprintf('MRIm%02d.dcm',i);
+    fname = fullfile(dirname_turbo, sname);
+    [X] = dicomread(fname);
+    info = dicominfo(fname); %Extract dicom_info
+    %imshow(X); %Check whether tumor is in the ROI.
+    
+    X_crop = X(x_init:x_init+len,y_init:y_init+len);
+    %imshow(X_crop); %Check whether tumor is in the ROI.
+    fname_new = sprintf('MRIc%02d.dcm',i);
+    
+    %No need for this because header info is overlayed eventually anyway.
+    %info_new = dicominfo(fname_new);
+    cd(dirname_turbo_crop);
+    dicomwrite(X_crop, fname_new, info);
 end

@@ -51,14 +51,20 @@ cd(base_name)
 base_name_new = strcat(name,'\T2_dynamic'); %store result here (standard)
 crop_name = strcat(name,'_crop'); %store result for cropped image analysis
 out_dir_05 = strcat(name,'_crop_G05'); %store result for cropped and Gaussian filtered image analysis
+turbo_crop_name = strcat(name,'_Turbo_crop'); %store cropped Turbo image
 
 cd(base_name);
 cd ..
 mkdir(crop_name); cd(crop_name) 
 crop_name_path = pwd;
+
 cd ..
 mkdir(out_dir_05); cd(out_dir_05);
 out_dir_05_path = pwd;
+
+cd ..
+mkdir(turbo_crop_name); cd(turbo_crop_name);
+turbo_crop_name_path = pwd;
 cd(base_name)
 %% This part is just preparation before estimating T2* values. 
 %If you've already done the pre-processing, just go to the "Estimate T2* map" part.
@@ -83,6 +89,7 @@ BOLD_crop_Andr(base_name); %For mouse GBM
 %Before estimating T2*, apply Gaussian filter. The last variable is the
 %"sigma" in the Gaussian filter. Bigger is the stronger filtering.
 %**************************************
+
 BOLD_Gaussian(crop_name_path,out_dir_05_path,0.5);
 
 %% Estimate T2* map
@@ -102,14 +109,14 @@ BOLD_overlay_t2sub_rel(t2map, base_name, animal_name, time_name);
 %**Dynamic TOLD**
 %TOLD signal will be saved to "TOLD.mat" 
 %**************************************
-BOLD_getTOLD(animal_name, time_name, numofrois);
+BOLD_getTOLD(base_name, animal_name, time_name, numofrois);
 
 %**Dynamic BOLD**
 %This function shows dynamic curve of T2*, TOLD and BOLD all together. BOLD
 %signal will be saved to "BOLD.mat". The last "si" in the name of this
 %function emphasize that the BOLD signal is signal intensity of raw image.
 %**************************************
-BOLD_getBOLDsi(animal_name, time_name, numofrois);
+BOLD_getBOLDsi(base_name, animal_name, time_name, numofrois);
 
 %% Overlay thresholded image with raw images
 BOLD_Andr_slope(t2map, base_name, animal_name, time_name); %Threshold slope map and overlay with raw image

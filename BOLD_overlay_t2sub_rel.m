@@ -11,32 +11,23 @@ close all
 crop_name = strcat(base_name,'_crop');
 
 %Set these parameters manually
-tp_pre = 3;
-tp_post = 5;
+tp_pre = 8;
+tp_post = 12;
 te_max = 15;
 cb_t2sub = [-15 15];
 cb_t2rel = [-50 50];
 
 %Set parameters depending on the data type
-if strcmp(time_name,'PreRT') || strcmp(time_name,'PostRT')
-    tp_total = 11;
-elseif strcmp(time_name,'Post1w')
-    tp_total = 6;
-    num_air_preCB = 5;
-    num_total_CB = 16; %air(3) -> oxy(3) -> air(5) -> CB(5)
-elseif strcmp(time_name,'Post2w')
-    tp_air = 2;
-    tp_total = 5;
-    tp_pre = 2;
-    tp_post = 4;
-elseif (strcmp(time_name,'Andrea_B') || strcmp(time_name,'Andrea_C') || strcmp(time_name,'Andrea_D') || ... 
-        strcmp(time_name,'Andrea_E') || strcmp(time_name,'Andrea_F') ||strcmp(time_name,'Andrea_G'))
+if (strcmp(time_name,'Chemo_2w'))
     tp_air = 3;
     tp_total = 25;
+elseif (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w'))
+    tp_air = 10;
+    tp_total = 20;
 end
 
 cd(base_name)
-cd results
+cd results_G05
 %load('t2map.mat')
 
 T2_air_ave = zeros(size(t2map,1),size(t2map,2),1,size(t2map,4));
@@ -61,7 +52,7 @@ for z = 1:size(t2map,4)
     for i = 1:size(t2map,3)
         T2sub_air_ave = t2map - T2_air_ave;
         
-        if i<=6
+        if (8<=i && i<=13) %Which tp to display. Change Manually.
             subaxis(1,6,i,'SpacingVert',0.01,'SpacingHoriz',0.005);
             imagesc(T2sub_air_ave(:,:,i,z)), 
             title(strcat(num2str(i),'-air, z',z_s)); 
@@ -73,9 +64,9 @@ for z = 1:size(t2map,4)
     end
 end
 
-
 %Calculate T2*map relative change
 for z = 1:size(t2map,4)
+    count = 0;
     figure(z+size(t2map,4));
     set(gcf,'Position',[100 100 1300 500], 'Color', 'w');
     z_s = num2str(z);
@@ -83,8 +74,9 @@ for z = 1:size(t2map,4)
     for i = 1:size(t2map,3)
         T2rel_air_ave(:,:,i,z) = 100 * T2sub_air_ave(:,:,i,z) ./ T2_air_ave(:,:,1,z);
         
-        if i<=6
-            subaxis(1,6,i,'SpacingVert',0.01,'SpacingHoriz',0.005);
+        if (8<=i && i<=17) %Which tp to display
+            count = count+1;
+            subaxis(2,5,count,'SpacingVert',0.03,'SpacingHoriz',0.005);
             imagesc(T2rel_air_ave(:,:,i,z)), 
             title(strcat('rel, ', num2str(i),', z',z_s)); 
             %colorbar;
@@ -93,6 +85,7 @@ for z = 1:size(t2map,4)
             axis off;
         end
     end
+    saveas(gcf,strcat(base_name,'\results_G05\Series_relT2','_z',num2str(z),'.tif'))
 end
 
 
@@ -124,7 +117,7 @@ for z = 1:size(t2map,4) %Slice
     caxis(cb_t2sub);
     colorbar;
     set(gca,'xtick',[],'ytick',[]);
-    title('Oxygen(5) - Air(3) (ms)');
+    title(strcat('Oxygen(',num2str(tp_post),') - Air(',num2str(tp_pre),') (ms), z',num2str(z)));
 
     %Calculate Relative Increase(%).
     img_air = squeeze(T2_air_ave);
@@ -164,7 +157,7 @@ end
 
 %% Overlay with map
 cd(base_name)
-cd results
+cd results_G05
 %Manualy change these parameters
 sub_min = 1; %minimum of color range in overlaying map
 sub_max = 20; %max of color range in overlaying map
