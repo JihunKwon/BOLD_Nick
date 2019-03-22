@@ -20,7 +20,7 @@ te_max = 15;
 if (strcmp(time_name,'Chemo_2w'))
     tp_air = 3;
     tp_total = 25;
-elseif (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w'))
+elseif (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w') || strcmp(time_name,'Control_3w'))
     tp_air = 10;
     tp_total = 20;
 end
@@ -38,7 +38,8 @@ end
 cd(crop_name)
 
 %15(TEs)*5(slice)*25(tp)
-%Get every image with TE=39. TEs(10)
+%TEs = [2.5592 6.1152 9.6712 13.2272 16.7832 20.3392 23.8952 27.4512 31.0072 34.5633 38.1193 41.6753 45.2313 48.7873 52.3433];
+%Get every image with TE=34.7. TEs(10)
 count = 10;
 for tp = 1:tp_total
     for z = 1:z_max
@@ -150,4 +151,71 @@ for i=1:size(values_rel,3)
             'ROI3, \DeltaT2*','ROI1, TOLD','ROI2, TOLD','ROI3, TOLD'},'FontSize',8,'Location','northwest');
     end
     saveas(gcf,strcat(base_name,'\results_G05\BOLDvsT2vsTOLD_s',num2str(i),'.tif'))
+end
+
+%% Plot BOLD, dT2* and TOLD all together
+
+for i=1:size(values_rel,3)
+    figure; %BOLD
+    plot(values_rel_bold(:,1,i),'-ro','MarkerSize',8,'MarkerFaceColor','red','LineWidth',2); hold on;    
+    plot(values_rel_bold(:,2,i),'--ro','MarkerSize',8,'LineWidth',2); hold on;
+    
+    if numofrois==3
+        plot(values_rel_bold(:,3,i),':ro','MarkerSize',8,'LineWidth',2); hold on; %3rd ROI
+    end
+    axis_setting1; title(strcat('BOLD, Z',num2str(i)));
+    ylim([-50 50]);
+    yl = get(gca, 'YLim');
+    line( [tp_air+0.5 tp_air+0.5], yl,'Color','black','LineStyle','--'); hold on;
+    xl = get(gca, 'XLim');
+    line( xl, [0 0],'Color','black','LineStyle','-')
+    xlabel('Time')
+    ylabel('Relative Change (%)')
+    if numofrois==2
+        legend({'Tumor, BOLD','Tissue, BOLD'},'FontSize',11,'Location','southeast');
+    elseif numofrois==3
+        legend({'ROI1, BOLD','ROI2, BOLD','ROI3, BOLD'},'FontSize',8,'Location','southeast');
+    end
+    saveas(gcf,strcat(base_name,'\results_G05\onlyBOLD_s',num2str(i),'.png'))
+    
+    figure; %dT2* 
+    plot(values_rel_dT2(:,1,i),'-^','MarkerSize',8,'MarkerFaceColor',[.3 .77 .09],'LineWidth',2,'color',[.3 .77 .09]); hold on;
+    plot(values_rel_dT2(:,2,i),'--^','MarkerSize',8,'LineWidth',2,'color',[.3 .77 .09]); hold on;
+    
+    if numofrois==3
+        plot(values_rel_dT2(:,3,i),':^','MarkerSize',8,'LineWidth',2,'color',[.3 .77 .09]); hold on; %3rd ROI
+    end
+    axis_setting1; title(strcat('\DeltaT2*, Z',num2str(i)));
+    ylim([-50 50]);
+    line( [tp_air+0.5 tp_air+0.5], yl,'Color','black','LineStyle','--'); hold on;
+    line( xl, [0 0],'Color','black','LineStyle','-')
+    xlabel('Time')
+    ylabel('Relative Change (%)')
+    if numofrois==2
+        legend({'Tumor, \DeltaT2*','Tissue, \DeltaT2*'},'FontSize',11,'Location','southeast');
+    elseif numofrois==3
+        legend({'ROI1, \DeltaT2*','ROI2, \DeltaT2*','ROI3, \DeltaT2*'},'FontSize',8,'Location','southeast');
+    end
+    saveas(gcf,strcat(base_name,'\results_G05\onlydT2_s',num2str(i),'.png'))
+    
+    
+    figure; %TOLD
+    plot(values_rel(:,1,i),'-ks','MarkerSize',8,'MarkerFaceColor','black','LineWidth',2); hold on;
+    plot(values_rel(:,2,i),'--ks','MarkerSize',8,'LineWidth',2); hold on;
+    
+    if numofrois==3
+        plot(values_rel(:,3,i),':ks','MarkerSize',8,'LineWidth',2); hold on; %3rd ROI
+    end
+    axis_setting1; title(strcat('TOLD, Z',num2str(i)));
+    ylim([-50 50]);
+    line( [tp_air+0.5 tp_air+0.5], yl,'Color','black','LineStyle','--'); hold on;
+    line( xl, [0 0],'Color','black','LineStyle','-')
+    xlabel('Time')
+    ylabel('Relative Change (%)')
+    if numofrois==2
+        legend({'Tumor, TOLD','Tissue, TOLD'},'FontSize',11,'Location','southeast');
+    elseif numofrois==3
+        legend({'ROI1, TOLD','ROI2, TOLD','ROI3, TOLD'},'FontSize',8,'Location','southeast');
+    end
+    saveas(gcf,strcat(base_name,'\results_G05\onlyTOLD_s',num2str(i),'.png'))
 end

@@ -1,4 +1,4 @@
-function []=BOLD_img_register(dirname,time_name)
+%function []=BOLD_img_register(dirname,time_name)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 1.0
 % created on 12/19/2018 by Jihun Kwon
@@ -7,7 +7,8 @@ function []=BOLD_img_register(dirname,time_name)
 % timepoint, second TE. (because first TE image is not very clear) 
 % Email: jkwon@bwh.harvard.edu 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%{
+dirname_tr = strcat(dirname,'_tr');
 te_target = 10; %Set until which TE you want to register. Longer TE should be difficult to register.
 te_fix = 2; %In this case, we chose second TE as a reference.
 te_max = 15;
@@ -34,16 +35,16 @@ for z = 1:3
 end
 
 %% Get Transformation matrix for each slice
-count = 46;
+count = 1;
 Rfixed = imref2d(size(fixed_all(:,:,1))); %always same
-for tp = 2:tp_max %Skip first tp (fixed image)
+for tp = 1:tp_max
     for z = 1:z_max
         for te = 1:te_max
             if te==te_fix
                 sname = sprintf('MRIc%04d.dcm',count);
                 fname = fullfile(dirname, sname);
                 moving = dicomread(fname);
-                imshowpair(fixed_all(:,:,z), moving, 'Scaling', 'joint');
+                %imshowpair(fixed_all(:,:,z), moving, 'Scaling', 'joint');
                 tformSimilarity(tp,z) = imregtform(moving,fixed_all(:,:,z),'similarity',optimizer,metric);
             end
             count = count + 1;
@@ -51,23 +52,36 @@ for tp = 2:tp_max %Skip first tp (fixed image)
     end
 end
 
-
+save(strcat('tForm_para.mat'),'tformSimilarity');
+%}
 %% Move images
 %Method1: move only te=7 and apply same transformation matrix to the rest
 %of the TEs.
+cd(dirname)
 count = 1;
 for tp = 1:tp_max
     for z = 1:z_max
         for te = 1:te_max
-            if (te~=te_fix && te <= te_target)
+            %if tp>1
                 sname = sprintf('MRIc%04d.dcm',count);
                 fname = fullfile(dirname, sname);
                 moving = dicomread(fname);
-                imshowpair(fixed_all(:,:,z), moving, 'Scaling', 'joint');
-                
+                if te == 2
+                    figure;
+                    imshowpair(fixed_all(:,:,z), moving, 'Scaling', 'joint');
+                end
+
                 movingRegisteredRigid = imwarp(moving,tformSimilarity(tp,z),'OutputView',Rfixed);
-                imshowpair(movingRegisteredRigid, fixed_all(:,:,z))
-            end
+                if te == 2
+                    figure;
+                    imshowpair(movingRegisteredRigid, fixed_all(:,:,z))
+                end
+
+                sname = sprintf('MRItr%04d.dcm',count);
+                cd(dirname_tr);
+                dicomwrite(movingRegisteredRigid, sname);
+                cd(dirname);
+            %end
             count = count + 1;
         end
     end

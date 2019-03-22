@@ -13,8 +13,11 @@ function []=BOLD_crop_Andr(dirname)
 dirname_crop = strcat(dirname,'_crop');
 % For Andrea's data
 len = 96;
+% x_init = 30;
+% y_init = 60;
+
 x_init = 30;
-y_init = 60;
+y_init = 35;
 
 num_of_files = dir([dirname '/*.dcm']);
 num_max = size(num_of_files,1);
