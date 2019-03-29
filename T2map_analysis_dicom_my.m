@@ -9,12 +9,13 @@
 close all
 %% load data and header information
 dirname=uigetdir; % location of "uncropped" dicom files
-tarname = strcat(dirname,'_crop_G05'); %name of target files. In our case, this is usually cropped files.
+tarname = strcat(dirname,'_crop'); %name of target files. In our case, this is usually cropped files.
 %tarname = strcat(dirname,'_crop');
 [new_T,~]=dicom_info_field({'EchoTime','SliceLocation'},dirname);
 te=unique(new_T.EchoTime,'stable');
 numofslice=length(unique(new_T.SliceLocation));
 data=dicomread_dir(tarname);
+%data=dicomread_dir(dirname); %Analyze original images (not cropped)
 data=reshape(data,size(data,1),size(data,2),length(te),[]);
 
 %% generate t2 maps, this part will take a lot of time. Use parallel computing if possible
@@ -31,12 +32,12 @@ mkdir(strcat(dirname,'\results_G05'))
 save(strcat(dirname,'\results_G05\t2map'),'t2map','S0map','kmap')
 %save(strcat(dirname,'\results_G05\t2map'),'t2map','S0map')
 
-%% save visualization results
+%% save visualization results_G05
 figure;
 for i=1:size(t2map,3)
     for j=1:size(t2map,4)
         clf
-        imagesc(t2map(:,:,i,j));img_setting1;colormap jet;set(gca,'clim',[0 30]);colorbar; %Pre:[0 50],Post:[0 30]
+        imagesc(t2map(:,:,i,j));img_setting1;colormap jet;set(gca,'clim',[0 50]);colorbar; %Pre:[0 50],Post:[0 30]
         saveas(gcf,strcat(dirname,'\results_G05\map_s',num2str(j),'_tp',num2str(i),'.tif'))
     end
 end
@@ -54,7 +55,8 @@ end
 
 %% Contour ROIs
 Turboname = strcat(dirname,'_Turbo_crop'); %When we contour on turbo image, we use this variable later.
-background_str = 'Turbo'; %Chose 'T2map' or 'Raw' or 'Turbo', for background image of contouring.
+Turboname_uncrop = strcat(dirname,'_Turbo'); %When we contour on turbo image, we use this variable later.
+background_str = 'Uncropped'; %Chose 'T2map' or 'Raw' or 'Turbo' or 'Uncropped', for background image of contouring.
 for i=1:size(t2map,4)
     %When contour on "T2* map"
     if strcmp(background_str, 'T2map') 
@@ -80,10 +82,35 @@ for i=1:size(t2map,4)
         
     %When contour on "Turbo" image (Provided by Andrea)
     elseif strcmp(background_str, 'Turbo') 
-        file_target = 10 + (i-1);%which TE to use for raw image contouring.
-        %Slice 1,2,3,4,5 in T2*wI corresponds to file 10,11,12,13,14 in Turbo.
+        if (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w') || strcmp(time_name,'Control_3w'))
+            %Slice 1,2,3,4,5 in T2*wI corresponds to file 10,11,12,13,14 in Turbo.
+            file_target = 10 + (i-1);%which TE to use for raw image contouring.
+        elseif strcmp(time_name,'NP_RT_21d')
+            %Slice 1,2,3,4,5 in T2*wI corresponds to file 7,8,9,10,11 in Turbo.
+            file_target = 7 + (i-1);%which TE to use for raw image contouring.
+        end
+            
         sname = sprintf('MRIc%02d.dcm',file_target);
         fname = fullfile(Turboname, sname);
+        Turbo(:,:,1,i) = dicomread(fname);
+        [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,Turbo(:,:,1,i),numofrois,background_str);
+        file_target = file_target+size(te,1); %go to next slice, same te file
+        clf;set(gcf,'Units','normalized','OuterPosition',[0 0 1 1]);
+        subplot(1,2,1);
+        imagesc(Turbo(:,:,1,i)); caxis([0 20000]); %To visualize dicom file B:14000, C:18000
+        
+    %When use uncropped data
+    elseif strcmp(background_str, 'Uncropped') 
+        if (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w') || strcmp(time_name,'Control_3w'))
+            %Slice 1,2,3,4,5 in T2*wI corresponds to file 10,11,12,13,14 in Turbo.
+            file_target = 10 + (i-1);%which TE to use for raw image contouring.
+        elseif strcmp(time_name,'NP_RT_21d')
+            %Slice 1,2,3,4,5 in T2*wI corresponds to file 7,8,9,10,11 in Turbo.
+            file_target = 7 + (i-1);%which TE to use for raw image contouring.
+        end
+            
+        sname = sprintf('MRIm%02d.dcm',file_target);
+        fname = fullfile(Turboname_uncrop, sname);
         Turbo(:,:,1,i) = dicomread(fname);
         [values(:,:,i),b(:,:,:,i),p{i}]=roi_values(t2map,Turbo(:,:,1,i),numofrois,background_str);
         file_target = file_target+size(te,1); %go to next slice, same te file
@@ -114,7 +141,7 @@ cd(dirname)
 load('reference_2ROIs.mat')
 %load('reference_3ROIs.mat')
 
-cd T2_dynamic/results_G0.5/
+cd T2_dynamic/results_G05_G0.5/
 load('t2map.mat')
 %}
 

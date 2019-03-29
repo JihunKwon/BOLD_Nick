@@ -17,7 +17,7 @@ len = 96;
 % y_init = 60;
 
 x_init = 30;
-y_init = 35;
+y_init = 50;
 
 num_of_files = dir([dirname '/*.dcm']);
 num_max = size(num_of_files,1);
