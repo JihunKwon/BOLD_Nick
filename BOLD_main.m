@@ -9,6 +9,7 @@ clear;
 clc;
 close all;
 
+<<<<<<< HEAD
 animal_name = 'A549'; %ex: A,B,C, ...or 633,634,... or A549
 
 %Either 'Chemo_2w', 'Control_1w' or 'Control_2w' or 'NP_RT_21d'
@@ -16,6 +17,10 @@ animal_name = 'A549'; %ex: A,B,C, ...or 633,634,... or A549
 time_name = 'A549_RT_10d'; 
 
 
+=======
+animal_name = '644'; %ex: A,B,C, ...
+time_name = 'NP_RT_21d'; %Either 'Chemo_2w', 'Control_1w' or 'Control_2w' or 'NP_RT_21d'
+>>>>>>> e4b6b6fb7462d07e7a4291cede3b5eeaef9c2236
 ani_time_name = strcat(animal_name,'_',time_name);
 
 %Define file locations depending on the 'time_name'
@@ -54,6 +59,7 @@ elseif strcmp(animal_name,'A') && strcmp(time_name,'Control_3w')
     
 %GBM nano+RT Day21
 elseif strcmp(animal_name,'610') && strcmp(time_name,'NP_RT_21d')
+<<<<<<< HEAD
     base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190320_22days-post\610\BOLD'; %J: edit this path
 elseif strcmp(animal_name,'633') && strcmp(time_name,'NP_RT_21d')
     base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190320_22days-post\633\BOLD';
@@ -72,6 +78,17 @@ elseif strcmp(animal_name,'A549') && strcmp(time_name,'A549_RT_1d')
 elseif strcmp(animal_name,'A549') && strcmp(time_name,'A549_RT_10d')
     base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27\BOLD';
     
+=======
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190320_22days-post\610\BOLD'; %J: edit this path
+elseif strcmp(animal_name,'633') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190320_22days-post\633\BOLD';
+elseif strcmp(animal_name,'634') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190320_22days-post\634\BOLD';
+elseif strcmp(animal_name,'643') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190320_22days-post\643\BOLD';
+elseif strcmp(animal_name,'644') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190320_22days-post\644\BOLD';
+>>>>>>> e4b6b6fb7462d07e7a4291cede3b5eeaef9c2236
 else
     return;
 end
