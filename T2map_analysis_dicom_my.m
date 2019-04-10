@@ -56,11 +56,7 @@ end
 %% Contour ROIs
 Turboname = strcat(dirname,'_Turbo_crop'); %When we contour on turbo image, we use this variable later.
 Turboname_uncrop = strcat(dirname,'_Turbo'); %When we contour on turbo image, we use this variable later.
-<<<<<<< HEAD
 background_str = 'T2map'; %Chose 'T2map' or 'Raw' or 'Turbo' or 'Uncropped', for background image of contouring.
-=======
-background_str = 'Uncropped'; %Chose 'T2map' or 'Raw' or 'Turbo' or 'Uncropped', for background image of contouring.
->>>>>>> e4b6b6fb7462d07e7a4291cede3b5eeaef9c2236
 for i=1:size(t2map,4)
     %When contour on "T2* map"
     if strcmp(background_str, 'T2map') 
@@ -151,10 +147,6 @@ end
 cd(dirname)
 load('reference_2ROIs.mat')
 %load('reference_3ROIs.mat')
-<<<<<<< HEAD
-=======
-
->>>>>>> e4b6b6fb7462d07e7a4291cede3b5eeaef9c2236
 cd T2_dynamic/results_G05_G0.5/
 load('t2map.mat')
 %}
