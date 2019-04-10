@@ -21,7 +21,7 @@ cb_t2rel = [-50 50];
 if (strcmp(time_name,'Chemo_2w'))
     tp_air = 3;
     tp_total = 25;
-elseif (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w') || strcmp(time_name,'Control_3w'))
+elseif (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w') || strcmp(time_name,'Control_3w') || strcmp(time_name,'NP_RT_21d'))
     tp_air = 10;
     tp_total = 20;
 end

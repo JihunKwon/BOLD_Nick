@@ -9,47 +9,69 @@ clear;
 clc;
 close all;
 
-animal_name = 'B'; %ex: A,B,C, ...
-time_name = 'Chemo_2w'; %Either 'Chemo_2w', 'Control_1w' or 'Control_2w' or 'NP_RT_21d'
+animal_name = 'A549'; %ex: A,B,C, ...or 633,634,... or A549
+
+%Either 'Chemo_2w', 'Control_1w' or 'Control_2w' or 'NP_RT_21d'
+%Or "A549_pre", "A549_RT_1d", "A549_RT_10d"
+time_name = 'A549_RT_10d'; 
+
+
 ani_time_name = strcat(animal_name,'_',time_name);
 
 %Define file locations depending on the 'time_name'
 if strcmp(animal_name,'B') && strcmp(time_name,'Chemo_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_B_2018';
 elseif strcmp(animal_name,'C') && strcmp(time_name,'Chemo_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_C_2018';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_C_2018';
 elseif strcmp(animal_name,'D') && strcmp(time_name,'Chemo_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_D_2018';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_D_2018';
 elseif strcmp(animal_name,'E') && strcmp(time_name,'Chemo_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_E_2018';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_E_2018';
 elseif strcmp(animal_name,'F') && strcmp(time_name,'Chemo_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_F_2018';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_F_2018';
 elseif strcmp(animal_name,'G') && strcmp(time_name,'Chemo_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_G_2018';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181106_Andrea\BOLD_G_2018';
+
 %Here next set of experiments begins. Control 1 week
 elseif strcmp(animal_name,'A') && strcmp(time_name,'Control_1w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_A_2019';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_A_2019';
 elseif strcmp(animal_name,'B') && strcmp(time_name,'Control_1w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_B_2019';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_B_2019';
 elseif strcmp(animal_name,'C') && strcmp(time_name,'Control_1w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_C_2019';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190125_Andrea\01-18-2019\BOLD_C_2019';
+    
 %Control 2 week
 elseif strcmp(animal_name,'A') && strcmp(time_name,'Control_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_A_2019_2';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_A_2019_2';
 elseif strcmp(animal_name,'B') && strcmp(time_name,'Control_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_B_2019_2';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_B_2019_2';
 elseif strcmp(animal_name,'C') && strcmp(time_name,'Control_2w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_C_2019_2';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190125_Andrea\01-25-2019\BOLD_C_2019_2';
+    
 %Control 3 week
 elseif strcmp(animal_name,'A') && strcmp(time_name,'Control_3w')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190125_Andrea\01-31-2019\BOLD_A_2019_3';
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190125_Andrea\01-31-2019\BOLD_A_2019_3';
+    
 %GBM nano+RT Day21
-elseif strcmp(animal_name,'A') && strcmp(time_name,'NP_RT_21d')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190322_Andrea\'; %J: edit this path
-elseif strcmp(animal_name,'B') && strcmp(time_name,'NP_RT_21d')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190322_Andrea\';
-elseif strcmp(animal_name,'C') && strcmp(time_name,'NP_RT_21d')
-    base_name = 'C:\Users\jihun\Documents\MATLAB\BOLD\20190322_Andrea\';
+elseif strcmp(animal_name,'610') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190320_22days-post\610\BOLD'; %J: edit this path
+elseif strcmp(animal_name,'633') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190320_22days-post\633\BOLD';
+elseif strcmp(animal_name,'634') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190320_22days-post\634\BOLD';
+elseif strcmp(animal_name,'643') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190320_22days-post\643\BOLD';
+elseif strcmp(animal_name,'644') && strcmp(time_name,'NP_RT_21d')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20190320_22days-post\644\BOLD';
+    
+%A549 preRT
+elseif strcmp(animal_name,'A549') && strcmp(time_name,'A549_pre')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181127_111701_Berbeco_Bi_Gd_1_25\BOLD'; %J: edit this path
+elseif strcmp(animal_name,'A549') && strcmp(time_name,'A549_RT_1d')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181128_111344_Berbeco_Bi_Gd_1_26\BOLD';
+elseif strcmp(animal_name,'A549') && strcmp(time_name,'A549_RT_10d')
+    base_name = 'C:\Users\Kwon\Documents\MATLAB\BOLD\20181206_111438_Berbeco_Bi_Gd_1_27\BOLD';
+    
 else
     return;
 end
