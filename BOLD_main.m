@@ -9,11 +9,11 @@ clear;
 clc;
 close all;
 
-animal_name = 'A549'; %ex: A,B,C, ...or 633,634,... or A549
+animal_name = 'A'; %ex: A,B,C, ...or 633,634,... or A549
 
-%Either 'Chemo_2w', 'Control_1w' or 'Control_2w' or 'NP_RT_21d'
+%Either 'Chemo_2w', 'Control_1w' or 'Control_2w' or 'Control_3w' or 'NP_RT_21d'
 %Or "A549_pre", "A549_RT_1d", "A549_RT_10d"
-time_name = 'A549_RT_10d'; 
+time_name = 'Control_3w'; 
 
 ani_time_name = strcat(animal_name,'_',time_name);
 
@@ -150,6 +150,9 @@ BOLD_getTOLD(base_name, animal_name, time_name, numofrois);
 BOLD_getBOLDsi(base_name, animal_name, time_name, numofrois);
 
 %% Overlay thresholded image with raw images
-BOLD_Andr_slope(t2map, base_name, animal_name, time_name); %Threshold slope map and overlay with raw image
-BOLD_Andr_SNR(t2map, base_name, animal_name, time_name); %Threshold SNR map and overlay with raw image
-BOLD_Andr_getBOLDsi(t2map, base_name, animal_name, time_name); %Threshold BOLD map and overlay with raw image
+cd(base_name)
+cd results_G05\
+load('reference_2ROIs'); %Import ROI info here
+BOLD_Andr_slope(t2map, base_name, animal_name, time_name,b); %Threshold slope map and overlay with raw image
+BOLD_Andr_SNR(t2map, base_name, animal_name, time_name,b); %Threshold SNR map and overlay with raw image
+BOLD_Andr_getBOLDsi(t2map, base_name, animal_name, time_name,b); %Threshold BOLD map and overlay with raw image

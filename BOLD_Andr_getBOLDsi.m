@@ -1,4 +1,4 @@
-function []=BOLD_Andr_getBOLDsi(t2map, base_name,animal_name,time_name)
+function []=BOLD_Andr_getBOLDsi(t2map, base_name,animal_name,time_name,b)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Version 1.0
 % created on 12/12/2018 by Jihun Kwon
@@ -8,10 +8,6 @@ function []=BOLD_Andr_getBOLDsi(t2map, base_name,animal_name,time_name)
 close all
 
 crop_name = strcat(base_name,'_crop');
-
-%set two timepoints
-tp_pre = 3;
-tp_post = 5;
 te_max = 15;
 
 %% Parameterstp_total = 25;
@@ -20,26 +16,21 @@ te_target = 11;
 cd(crop_name)
 
 %Set parameters depending on the data type
-if strcmp(time_name,'PreRT') || strcmp(time_name,'PostRT')
-    tp_total = 11;
-elseif strcmp(time_name,'Post1w')
-    tp_total = 6;
-    num_air_preCB = 5;
-    num_total_CB = 16; %air(3) -> oxy(3) -> air(5) -> CB(5)
-elseif strcmp(time_name,'Post2w')
-    tp_air = 2;
-    tp_total = 5;
-    tp_pre = 2;
-    tp_post = 4;
-    te_target = 11;
-elseif (strcmp(time_name,'Andrea_B') || strcmp(time_name,'Andrea_C') || strcmp(time_name,'Andrea_D') || ... 
-        strcmp(time_name,'Andrea_E') || strcmp(time_name,'Andrea_F') ||strcmp(time_name,'Andrea_G'))
+if (strcmp(time_name,'Chemo_2w'))
     tp_air = 3;
     tp_total = 25;
+elseif (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w') || strcmp(time_name,'Control_3w') || strcmp(time_name,'NP_RT_21d'))
+    tp_air = 10;
+    tp_total = 20;
 end
 
+%set two timepoints which are used for calculating the slope.
+tp_pre = tp_air-1;
+tp_post = tp_air+1;
+te_max = 15;
+
 cd(base_name)
-cd results\
+cd results_G05\
 
 %Initialize parameters
 T2wI_raw = zeros(97,97,tp_total,size(t2map,4)); %Slice)
@@ -92,26 +83,60 @@ slice = 2;
 thr = (T2wI_rel >= thr_min & T2wI_rel <= thr_max); 
 T2wI_rel_thr = T2wI_rel .* thr;
 
+%% Use Turbo for background
+for slice = 1:size(t2map,4) %Slice 
+    Turboname = strcat(base_name,'_Turbo_crop'); %When we contour on turbo image, we use this variable later.
 
-%% Overlay (Overlay one image transparently onto another)
-%threshold image as a mask
-time = 8;
-slice = 2;
-imB = T2wI_raw(:,:,time,slice); % Background image 
-imF_thr = thr(:,:,time,slice); % Foreground image 
-[hf,hb] = imoverlay(imB,imF_thr,[1,2],[0 10000],'flag',0.7); 
-colormap('flag'); % figure colormap still applies
-savename = strcat('dSI_overlay_t',num2str(time),'_z',num2str(slice),'_',num2str(thr_min),'to',num2str(thr_max),'.tif');
-saveas(gcf,savename);
+    if (strcmp(time_name,'Control_1w') || strcmp(time_name,'Control_2w') || strcmp(time_name,'Control_3w'))
+        %Slice 1,2,3,4,5 in T2*wI corresponds to file 10,11,12,13,14 in Turbo.
+        file_target = 10 + (slice-1);%which TE to use for raw image contouring.
+    elseif strcmp(time_name,'NP_RT_21d')
+        %Slice 1,2,3,4,5 in T2*wI corresponds to file 7,8,9,10,11 in Turbo.
+        file_target = 7 + (slice-1);%which TE to use for raw image contouring.
+    end
 
-%relative change with color window
-rel_min = 1;
-rel_max = 50;
-imF = T2wI_rel(:,:,time,slice); % Foreground image 
-[hf,hb] = imoverlay(imB,imF,[rel_min,rel_max],[0 10000],'jet',0.7); 
-colormap('jet'); % figure colormap still applies
-colorbar;
-savename = strcat('dSI_overlay_t',num2str(time),'_z',num2str(slice),'_',num2str(thr_min),'to',num2str(thr_max),'.tif');
-saveas(gcf,savename);
+    sname = sprintf('MRIc%02d.dcm',file_target);
+    fname = fullfile(Turboname, sname);
+    Turbo(:,:,1,1) = dicomread(fname);
+    
+    %% Overlay (Overlay one image transparently onto another)
+    %threshold image as a mask
+    %imB = T2wI_raw(:,:,time,slice); % Background image 
+    imB = Turbo(:,:,1,1); % Background image 
+    imF_thr = thr(:,:,time,slice); % Foreground image 
+    [hf,hb] = imoverlay(imB,imF_thr,[1,2],[0 10000],'flag',0.7); 
+    colormap('flag'); % figure colormap still applies
+    title(strcat('Relative Increase of SI Map (%), z',num2str(slice)));
+    savename = strcat('dSI_overlay_t',num2str(time),'_z',num2str(slice),'_',num2str(thr_min),'to',num2str(thr_max),'.tif');
+    saveas(gcf,savename);
 
+    %relative change with color window
+    rel_min = 1;
+    rel_max = 50;
+    imF = T2wI_rel(:,:,time,slice); % Foreground image 
+    [hf,hb] = imoverlay(imB,imF,[rel_min,rel_max],[0 10000],'jet',0.7); 
+    colormap('jet'); % figure colormap still applies
+    colorbar;
+    title(strcat('Relative Increase of SI Map (%), z',num2str(slice)));
+    savename = strcat('dSI_relative_t',num2str(time),'_z',num2str(slice),'_',num2str(thr_min),'to',num2str(thr_max),'.tif');
+    saveas(gcf,savename);
+    
+    %% Apply contouring
+    %threshold image as a mask
+    imF_thr_c = thr(:,:,time,slice) .* b(:,:,1,slice); % Foreground image 
+    [hf,hb] = imoverlay(imB,imF_thr_c,[1,2],[0 10000],'flag',0.7); 
+    colormap('flag'); % figure colormap still applies
+    title(strcat('Relative Increase of SI Map (%), z',num2str(slice)));
+    savename = strcat('dSI_roi_overlay_t',num2str(time),'_z',num2str(slice),'_',num2str(thr_min),'to',num2str(thr_max),'.tif');
+    saveas(gcf,savename);
+
+    %relative change with color window
+    imF_c = T2wI_rel(:,:,time,slice) .* b(:,:,1,slice); % Foreground image 
+    [hf,hb] = imoverlay(imB,imF_c,[rel_min,rel_max],[0 10000],'jet',0.7); 
+    colormap('jet'); % figure colormap still applies
+    colorbar;
+    title(strcat('Relative Increase of SI Map (%), z',num2str(slice)));
+    savename = strcat('dSI_roi_relative_t',num2str(time),'_z',num2str(slice),'_',num2str(thr_min),'to',num2str(thr_max),'.tif');
+    saveas(gcf,savename);
+end
 end

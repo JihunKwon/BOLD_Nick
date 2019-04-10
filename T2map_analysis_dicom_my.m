@@ -56,7 +56,7 @@ end
 %% Contour ROIs
 Turboname = strcat(dirname,'_Turbo_crop'); %When we contour on turbo image, we use this variable later.
 Turboname_uncrop = strcat(dirname,'_Turbo'); %When we contour on turbo image, we use this variable later.
-background_str = 'T2map'; %Chose 'T2map' or 'Raw' or 'Turbo' or 'Uncropped', for background image of contouring.
+background_str = 'Turbo'; %Chose 'T2map' or 'Raw' or 'Turbo' or 'Uncropped', for background image of contouring.
 for i=1:size(t2map,4)
     %When contour on "T2* map"
     if strcmp(background_str, 'T2map') 
